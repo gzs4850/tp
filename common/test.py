@@ -70,6 +70,7 @@ def send_request(testcase):
     else:
         result = {"code": False, "data": False}
     print("请求接口结果：\n %s" % str(result))
+    print(type(result))
     return result
 
 testcase = '{"request": {"url": "/ajaxLogin", "headers": {"Content-Type": "application/json"},"method": "POST", "json": {"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":false}}, "name": "7050用户登录", "content_type": "application/json", "validate": [{"comparator": "equals", "check": "code", "expected": "000"}]}'

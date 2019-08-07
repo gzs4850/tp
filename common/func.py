@@ -22,8 +22,8 @@ def random_str(randomlength=31):
         str+=chars[random.randint(0, length)]
     return str
 
-
-print(get_currenttime())
-print(random_str(10))
-print(get_randint(0,100))
+if __name__ == '__main__':
+    print(get_currenttime())
+    print(random_str(10))
+    print(get_randint(0,100))
 
