@@ -10,27 +10,58 @@ global var_dict, extract_dict
 var_dict = {}
 extract_dict = {}
 
-def field_extract(response, extract_dict):
-    if isinstance(response, tuple):
-        for item in response:
-            if isinstance(item, dict):
-                print(item)
-
-                for key in extract_dict:
-                    pass
-
-
-extract_dict = {"code": "code", "userId": "data.userId"}
-
-response = (200, {'code': '000', 'errorMsg': '', 'data': {'userId': 2, 'username': 'admin', 'password': 'e10adc3949ba59abbe56e057f20f883e', 'orgId': 1, 'userStatus': 1, 'createId': 123, 'createTime': '2019-05-25 11:52:26', 'modifyId': 2, 'modifyTime': '2019-05-25 11:52:26', 'orgType': 'Corp', 'defaultAppCode': 'seventyfifty', 'allSys': ['seventyfifty', 'permission'], 'orgName': '中铝集团', 'sessionId': 'ca115663-2c94-4168-bf1f-a6f0cec40b4f'}, 'message': None, 'status': None})
-
-field_extract(response, extract_dict)
-
-# print(regex_findall_functions("${func(a=1, b=2)}"))
-
-testcase = '{"request": {"url": "/ajaxLogin/abc${get_randint(min=1, max=100)}/${efg}", "headers": {"Content-Type": "application/json"},"method": "POST", "json": {"username":"${get_currenttime()}${ffff}${random_str(randomlength=5)}","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":false}}, "name": "7050用户登录", "content_type": "application/json", "validate": [{"comparator": "equals", "check": "code", "expected": "000"}]}'
+testcase = '{"request": {"url": "/ajaxLogin/abc${get_randint(min=1, max=100)}/${efg}", "headers": {"Content-Type": "application/json"},"method": "POST", "json": {"username":"${get_currenttime()}${ffff}${random_str(randomlength=5)}","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":false}}, "name": "7050用户登录", "content_type": "application/json", "validate": {"code": "000","data.userId":"1"}}'
 
 var_dict = {"efg":"5555","ffff":"123"}
+
+exp_dict = {"code": "000","data.userId":"2","data.sec.name":"san"}
+
+extract_dict = {"code1": "code", "userId1": "data.userId", "name":"data.sec.name"}
+
+response = (200, {'code': '000', 'errorMsg': '', 'data': {'userId': 2, 'username': 'admin', 'password': 'e10adc3949ba59abbe56e057f20f883e', 'sec':{'name':'lijie'},'orgId': 1, 'userStatus': 1, 'createId': 123, 'createTime': '2019-05-25 11:52:26', 'modifyId': 2, 'modifyTime': '2019-05-25 11:52:26', 'orgType': 'Corp', 'defaultAppCode': 'seventyfifty', 'allSys': ['seventyfifty', 'permission'], 'orgName': '中铝集团', 'sessionId': 'ca115663-2c94-4168-bf1f-a6f0cec40b4f'}, 'message': None, 'status': None})
+
+
+def field_check(exp_dict,response):
+    response = response[1]
+    print(exp_dict)
+    for key in exp_dict.keys():
+        temp = {}
+        locator = key.split(".")
+        if len(locator) == 1:
+            if str(response[locator[0]]) == str(exp_dict[key]):
+                print("check ok %s" %locator[0])
+            else:
+                print("check fail, expect value is %s, real value is %s" %(exp_dict[key],response[locator[0]]))
+                return False
+        else:
+            for i in range(len(locator)):
+                if i == 0:
+                    temp[key] = response[locator[i]]
+                else:
+                    temp[key] = temp[key][locator[i]]
+            if str(temp[key]) == str(exp_dict[key]):
+                print("check ok %s" % key)
+            else:
+                print("check fail %s, expect value is %s, real value is %s" % (key, exp_dict[key], temp[key]))
+                return False
+    return True
+
+field_check(exp_dict, response)
+
+def field_extract(response, extract_dict):
+    response = response[1]
+
+    for key in extract_dict.keys():
+        locator = extract_dict[key].split(".")
+        for i in range(len(locator)):
+            if i == 0:
+                var_dict[key] = response[locator[i]]
+            else:
+                var_dict[key] = var_dict[key][locator[i]]
+    print("var_dict:%s" % var_dict)
+    return var_dict
+
+# field_extract(response, extract_dict)
 
 def parseVariable(testcase):
     vars = re.findall(r"\$\{\w+\}",testcase)
@@ -50,3 +81,5 @@ def parseFunc(testcase):
         print(eval(a))
         testcase = testcase.replace(func,str(eval(a)))
         print("testcase:%s" %testcase)
+
+# parseFunc(testcase)
