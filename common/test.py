@@ -6,11 +6,12 @@
 from common import logger
 from core import apiMethod
 from common import loader
+from common import parse
 import json
 import logging
 
-def send_request(testcase):
-    case_dict = loader.load_testcase(testcase)
+def send_request(case_dict):
+    # case_dict = loader.load_testcase(testcase)
     print(case_dict)
     print("*" * 100)
 
@@ -44,12 +45,12 @@ def send_request(testcase):
                                     request_parameter_type=case_dict["content_type"],
                                     data=parameter,
                                     timeout=case_dict["timeout"])
-    elif case_dict["request_type"].lower() == 'get':
+    elif case_dict["case_method"].lower() == 'get':
         result = apiMethod.get(header=headers,
                                address=case_dict["http_type"] + "://" + case_dict["host"] + case_dict["case_url"],
                                data=parameter,
                                timeout=case_dict["timeout"])
-    elif case_dict["request_type"].lower() == 'put':
+    elif case_dict["case_method"].lower() == 'put':
         if case_dict["case_file"]:
             result = apiMethod.post(header=headers,
                                     address=case_dict["http_type"] + "://" + case_dict["host"] + case_dict["case_url"],
@@ -62,7 +63,7 @@ def send_request(testcase):
                                     request_parameter_type=case_dict["content_type"],
                                     data=parameter,
                                     timeout=case_dict["timeout"])
-    elif case_dict["request_type"].lower() == 'delete':
+    elif case_dict["case_method"].lower() == 'delete':
         result = apiMethod.get(header=headers,
                                address=case_dict["http_type"] + "://" + case_dict["host"] + case_dict["case_url"],
                                data=parameter,
@@ -70,9 +71,12 @@ def send_request(testcase):
     else:
         result = {"code": False, "data": False}
     print("请求接口结果：\n %s" % str(result))
-    print(type(result))
+    # print(type(result))
     return result
 
-testcase = '{"request": {"url": "/ajaxLogin", "headers": {"Content-Type": "application/json"},"method": "POST", "json": {"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":false}}, "name": "7050用户登录", "content_type": "application/json", "validate": [{"comparator": "equals", "check": "code", "expected": "000"}]}'
-
-send_request(testcase)
+if __name__ == '__main__':
+    testcase = '{"request": {"url": "/ajaxLogin", "headers": {"Content-Type": "application/json"},"method": "POST", "json": {"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":false}}, "name": "7050用户登录", "content_type": "application/json", "validate": {"code": "000"}}'
+    testcase2 = '{"request": {"url": "/zlstBigData/permission/user/getUserInfo","method": "GET", "json": {}}, "name": "获取用户信息", "content_type": "application/json", "validate": {"code": "000","data.orgName":"中铝集团"}}'
+    case_dict = loader.load_testcase(testcase2)
+    result = send_request(case_dict)
+    parse.field_check(case_dict,result)

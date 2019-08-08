@@ -18,27 +18,29 @@ exp_dict = {"code": "000","data.userId":"2","data.sec.name":"san"}
 
 extract_dict = {"code1": "code", "userId1": "data.userId", "name":"data.sec.name"}
 
-response = (200, {'code': '000', 'errorMsg': '', 'data': {'userId': 2, 'username': 'admin', 'password': 'e10adc3949ba59abbe56e057f20f883e', 'sec':{'name':'lijie'},'orgId': 1, 'userStatus': 1, 'createId': 123, 'createTime': '2019-05-25 11:52:26', 'modifyId': 2, 'modifyTime': '2019-05-25 11:52:26', 'orgType': 'Corp', 'defaultAppCode': 'seventyfifty', 'allSys': ['seventyfifty', 'permission'], 'orgName': '中铝集团', 'sessionId': 'ca115663-2c94-4168-bf1f-a6f0cec40b4f'}, 'message': None, 'status': None})
+response = (200, {'code': '000', 'errorMsg': '', 'data': {'userId': 2, 'username': 'admin', 'password': 'e10adc3949ba59abbe56e057f20f883e', 'sec':{'name':'san'},'orgId': 1, 'userStatus': 1, 'createId': 123, 'createTime': '2019-05-25 11:52:26', 'modifyId': 2, 'modifyTime': '2019-05-25 11:52:26', 'orgType': 'Corp', 'defaultAppCode': 'seventyfifty', 'allSys': ['seventyfifty', 'permission'], 'orgName': '中铝集团', 'sessionId': 'ca115663-2c94-4168-bf1f-a6f0cec40b4f'}, 'message': None, 'status': None})
 
 
-def field_check(exp_dict,response):
+def field_check(testcase,response):
+    exp_dict = testcase.get("case_validate")
     response = response[1]
     print(exp_dict)
     for key in exp_dict.keys():
+        print(key)
         temp = {}
         locator = key.split(".")
         if len(locator) == 1:
-            if str(response[locator[0]]) == str(exp_dict[key]):
+            if str(response.get(locator[0])) == str(exp_dict[key]):
                 print("check ok %s" %locator[0])
             else:
-                print("check fail, expect value is %s, real value is %s" %(exp_dict[key],response[locator[0]]))
+                print("check fail, expect value is %s, real value is %s" %(exp_dict[key],response.get(locator[0])))
                 return False
         else:
             for i in range(len(locator)):
                 if i == 0:
-                    temp[key] = response[locator[i]]
+                    temp[key] = response.get(locator[i])
                 else:
-                    temp[key] = temp[key][locator[i]]
+                    temp[key] = temp[key].get(locator[i])
             if str(temp[key]) == str(exp_dict[key]):
                 print("check ok %s" % key)
             else:
@@ -46,7 +48,7 @@ def field_check(exp_dict,response):
                 return False
     return True
 
-field_check(exp_dict, response)
+
 
 def field_extract(response, extract_dict):
     response = response[1]
@@ -71,7 +73,7 @@ def parseVariable(testcase):
         testcase = testcase.replace(var,var_dict.get(a))
         print("testcase:%s" % testcase)
 
-# parseVariable(testcase)
+
 
 def parseFunc(testcase):
     funcs = re.findall(r"\$\{\w+\(+.*?\)+.*?\}", testcase)
@@ -82,4 +84,9 @@ def parseFunc(testcase):
         testcase = testcase.replace(func,str(eval(a)))
         print("testcase:%s" %testcase)
 
-# parseFunc(testcase)
+
+
+if __name__ == '__main__':
+    field_check(exp_dict, response)
+    # parseVariable(testcase)
+    # parseFunc(testcase)
