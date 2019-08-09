@@ -24,9 +24,9 @@ response = (200, {'code': '000', 'errorMsg': '', 'data': {'userId': 2, 'username
 def field_check(testcase,response):
     exp_dict = testcase.get("case_validate")
     response = response[1]
-    print(exp_dict)
+    # print(exp_dict)
     for key in exp_dict.keys():
-        print(key)
+        # print(key)
         temp = {}
         locator = key.split(".")
         if len(locator) == 1:
