@@ -8,6 +8,8 @@ import os
 
 
 def get_conf(section, param):
+    print("section:%s" %section)
+    print("param:%s" %param)
     root_dir = os.path.abspath('.')
     configpath = os.path.join(root_dir, "config.ini")
     cf = configparser.ConfigParser()
@@ -16,7 +18,8 @@ def get_conf(section, param):
     value = cf.get(section,param)
     return value
 
-# print(get_conf("ENV","host"))
+if __name__ == '__main__':
+    print(get_conf("ENV","host"))
 
 #
 # class ReadConfig:

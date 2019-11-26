@@ -6,8 +6,7 @@ import json
 from common import readConfig
 
 def load_testcase(testcase):
-
-    host = readConfig.get_conf("ENV", "host")
+    host = readConfig.get_conf("ENV","host")
     http_type = readConfig.get_conf("ENV", "http_type")
     timeout = readConfig.get_conf("ENV", "timeout")
     variable_dict = {}
