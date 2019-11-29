@@ -10,9 +10,11 @@ global var_dict, extract_dict
 var_dict = {}
 extract_dict = {}
 
-testcase = '{"request": {"url": "/ajaxLogin/abc${get_randint(min=1, max=100)}/${efg}", "headers": {"Content-Type": "application/json"},"method": "POST", "json": {"username":"${get_currenttime()}${ffff}${random_str(randomlength=5)}","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":false}}, "name": "7050用户登录", "content_type": "application/json", "validate": {"code": "000","data.userId":"1"}}'
+testcase = '{"request": {"url": "/ajaxLogin/abc${get_randint(min=1, max=100)}/${efg}", "headers": {"Content-Type": "application/json"},"method": "POST", "json": {"username":"${get_currenttime()}${ffff}${random_str(randomlength=${value})}","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":false}}, "name": "7050用户登录", "content_type": "application/json", "validate": {"code": "000","data.userId":"1"}}'
 
-var_dict = {"efg":"5555","ffff":"123"}
+testcase1 = '{"request": {"url": "/ajaxLogin/abc${get_randint(min=1, max=100)}/5555", "headers": {"Content-Type": "application/json"},"method": "POST", "json": {"username":"${get_currenttime()}123${random_str(randomlength=3)}","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":false}}, "name": "7050用户登录", "content_type": "application/json", "validate": {"code": "000","data.userId":"1"}}'
+
+var_dict = {"efg":"5555","ffff":"123","value":3}
 
 exp_dict = {"code": "000","data.userId":"2","data.sec.name":"san"}
 
@@ -67,26 +69,37 @@ def field_extract(response, extract_dict):
 
 def parseVariable(testcase):
     vars = re.findall(r"\$\{\w+\}",testcase)
-    for var in vars:
-        a = var.lstrip("${").rstrip("}")
-        print(a)
-        testcase = testcase.replace(var,var_dict.get(a))
-        print("testcase:%s" % testcase)
+    if len(vars) > 0:
+        for var in vars:
+            a = var.lstrip("${").rstrip("}")
+            # print(a)
+            testcase = testcase.replace(var,str(var_dict.get(a)))
+    # print("testcase:%s" % testcase)
+    return testcase
 
 
 
 def parseFunc(testcase):
-    funcs = re.findall(r"\$\{\w+\(+.*?\)+.*?\}", testcase)
-    for func in funcs:
-        a = func.lstrip("${").rstrip("}")
-        print(a)
-        print(eval(a))
-        testcase = testcase.replace(func,str(eval(a)))
-        print("testcase:%s" %testcase)
+    # funcs = re.findall(r"\$\{\w+\(+.*?\)+.*?\}", testcase)
+    funcs = re.findall(r"\$\{\w+\(+.*?\)\}", testcase)
+    if len(funcs) > 0:
+        # print(funcs)
+        for func in funcs:
+            a = func.lstrip("${").rstrip("}")
+            # print(eval(a))
+            testcase = testcase.replace(func,str(eval(a)))
+            # print("testcase:%s" %testcase)
+    return testcase
 
-
+def parseCase(case):
+    case = parseVariable(case)
+    case = parseFunc(case)
+    print("case:%s" %case)
+    return case
 
 if __name__ == '__main__':
-    field_check(exp_dict, response)
+    print(testcase1)
+    # field_check(exp_dict, response)
     # parseVariable(testcase)
-    # parseFunc(testcase)
+    # parseFunc(testcase1)
+    parseCase(testcase)

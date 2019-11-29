@@ -4,7 +4,7 @@
 # @Author  : z.g
 
 import pytest
-from bin import api_send, case_load
+from bin import api_send_check
 
 testsuit = '{"testcase":[{"request": {"url": "/ajaxLogin", "headers": {"Content-Type": "application/json"},"method": "POST", ' \
            '"json": {"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":false}}, "name": "7050用户登录", ' \
@@ -15,9 +15,7 @@ testsuit = '{"testcase":[{"request": {"url": "/ajaxLogin", "headers": {"Content-
 
 class TestApi:
     def test_api(self, testsuit):
-        case = case_load(testsuit)
-        api_send(case)
-
+        api_send_check.exec_api(testsuit)
 
 if __name__ == '__main__':
     # testsuit = '{"testcase":[{"request": {"url": "/ajaxLogin", "headers": {"Content-Type": "application/json"},"method": "POST", "json": {"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":false}}, "name": "7050用户登录", "content_type": "application/json", "validate": {"code": "000"}},{"request": {"url": "/zlstBigData/permission/user/getUserInfo","method": "GET", "json": {}}, "name": "获取用户信息", "content_type": "application/json", "validate": {"code": "000","data.orgName":"中铝集团"}}]}'

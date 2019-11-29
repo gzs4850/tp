@@ -7,6 +7,10 @@ import random
 from random import Random
 import time
 
+def get_sign(a,b,c,d):
+    return "test"
+
+
 def get_currenttime():
     return time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
 
