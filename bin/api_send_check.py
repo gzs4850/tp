@@ -43,6 +43,10 @@ def exec_api(testsuit):
         code, result = api_send.send_request(case)
         print(code, result)
 
+        if case.get("case_validate") != None:
+            for validate in case.get("case_validate"):
+                pass
+
     return code, result
 
 
