@@ -4,24 +4,26 @@
 # @Author  : z.g
 
 import json
-from common import readConfig
+from bin import config_parse
+# from common import readConfig
 
-def load(testcase):
-    host = readConfig.get_conf("ENV","host")
-    http_type = readConfig.get_conf("ENV", "http_type")
-    timeout = readConfig.get_conf("ENV", "timeout")
+
+def load(testsuit):
+    host = config_parse.get_config("ENV", "host")
+    http_type = config_parse.get_config("ENV", "http_type")
+    timeout = config_parse.get_config("ENV", "timeout")
     variable_dict = {}
 
-    testcase = json.loads(testcase)
-    testcase = testcase.get("testcase")
-    print(testcase)
+    testsuit = json.loads(testsuit)
+    testsuit = testsuit.get("testcase")
+    print(testsuit)
 
-    for case in testcase:
+    for case in testsuit:
         # print(case)
 
         case_dict = {}
-        # if isinstance(testcase,str):
-        #     testcase = json.loads(testcase)
+        # if isinstance(testsuit,str):
+        #     testcase = json.loads(testsuit)
         #     # print(testcase)
 
         case_dict["host"] = host
@@ -47,7 +49,215 @@ def load(testcase):
 
 
 if __name__ == '__main__':
-    testcase1 = '{"request": {"url": "/gateway/api-ms/system/users/info", "method": "POST", "content_type": "json","json": {"staffId": "2c94c234639f60b101639f8614b10029", "userCode": "17010101", "effectiveStarttime": "", "effectiveEndtime": ""}}, "name": "新增用户", "validate": [{"comparator": "equals", "check": "resultCode", "expected": 0}]}'
-    testcase = '{"testcase":[{"request": {"url": "/ajaxLogin", "headers": {"Content-Type": "application/json"},"method": "POST", "json": {"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":false}}, "name": "7050用户登录", "content_type": "application/json", "validate": {"code": "000"}},{"request": {"url": "/zlstBigData/permission/user/getUserInfo","method": "GET", "json": {}}, "name": "获取用户信息", "content_type": "application/json", "validate": {"code": "000","data.orgName":"中铝集团"}}]}'
+    testsuit1 = '{"request": {"url": "/gateway/api-ms/system/users/info", "method": "POST", "content_type": "json","json": {"staffId": "2c94c234639f60b101639f8614b10029", "userCode": "17010101", "effectiveStarttime": "", "effectiveEndtime": ""}}, "name": "新增用户", "validate": [{"comparator": "equals", "check": "resultCode", "expected": 0}]}'
+    testsuit = '{"testcase":[{"request": {"url": "/ajaxLogin", "headers": {"Content-Type": "application/json"},"method": "POST", "json": {"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":false}}, "name": "7050用户登录", "content_type": "application/json", "validate": {"code": "000"}},{"request": {"url": "/zlstBigData/permission/user/getUserInfo","method": "GET", "json": {}}, "name": "获取用户信息", "content_type": "application/json", "validate": {"code": "000","data.orgName":"中铝集团"}}]}'
 # testcase2 = '{"request": {"url": "/ajaxLogin", "headers": {"Content-Type": "application/json"},"method": "POST", "json": {"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":false}}, "name": "7050用户登录", "content_type": "123456", "validate": [{"comparator": "equals", "check": "code", "expected": "000"}]}'
-    print(load(testcase))
+    print(load(testsuit))
+
+
+"""
+
+    testsuit:
+    
+    [[
+
+    {
+        "step":{
+            "name":"get token with $user_agent, $os_platform, $app_version",
+            "request":{
+                "url":"/api/get-token",
+                "method":"POST",
+                "headers":{
+                    "app_version":"$app_version",
+                    "os_platform":"$os_platform",
+                    "user_agent":"$user_agent"
+                },
+                "json":{
+                    "sign":"${get_sign($user_agent, $device_sn, $os_platform, $app_version)}"
+                },
+                "extract":[
+                    {
+                        "token":"content.token"
+                    }
+                ],
+                "validate":[
+                    {
+                        "eq":[
+                            "status_code",
+                            200
+                        ]
+                    },
+                    {
+                        "eq":[
+                            "headers.Content-Type",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "eq":[
+                            "content.success",
+                            true
+                        ]
+                    }
+                ],
+                "setup_hooks":[
+
+                ],
+                "teardown_hooks":[
+
+                ]
+            }
+        }
+    },
+    {
+        "step":{
+            "name":"get token with $user_agent, $os_platform, $app_version",
+            "request":{
+                "url":"/api/get-token",
+                "method":"POST",
+                "headers":{
+                    "app_version":"$app_version",
+                    "os_platform":"$os_platform",
+                    "user_agent":"$user_agent"
+                },
+                "json":{
+                    "sign":"${get_sign($user_agent, $device_sn, $os_platform, $app_version)}"
+                },
+                "extract":[
+                    {
+                        "token":"content.token"
+                    }
+                ],
+                "validate":[
+                    {
+                        "eq":[
+                            "status_code",
+                            200
+                        ]
+                    },
+                    {
+                        "eq":[
+                            "headers.Content-Type",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "eq":[
+                            "content.success",
+                            true
+                        ]
+                    }
+                ],
+                "setup_hooks":[
+
+                ],
+                "teardown_hooks":[
+
+                ]
+            }
+        }
+    }
+],
+[
+
+    {
+        "step":{
+            "name":"get token with $user_agent, $os_platform, $app_version",
+            "request":{
+                "url":"/api/get-token",
+                "method":"POST",
+                "headers":{
+                    "app_version":"$app_version",
+                    "os_platform":"$os_platform",
+                    "user_agent":"$user_agent"
+                },
+                "json":{
+                    "sign":"${get_sign($user_agent, $device_sn, $os_platform, $app_version)}"
+                },
+                "extract":[
+                    {
+                        "token":"content.token"
+                    }
+                ],
+                "validate":[
+                    {
+                        "eq":[
+                            "status_code",
+                            200
+                        ]
+                    },
+                    {
+                        "eq":[
+                            "headers.Content-Type",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "eq":[
+                            "content.success",
+                            true
+                        ]
+                    }
+                ],
+                "setup_hooks":[
+
+                ],
+                "teardown_hooks":[
+
+                ]
+            }
+        }
+    },
+    {
+        "step":{
+            "name":"get token with $user_agent, $os_platform, $app_version",
+            "request":{
+                "url":"/api/get-token",
+                "method":"POST",
+                "headers":{
+                    "app_version":"$app_version",
+                    "os_platform":"$os_platform",
+                    "user_agent":"$user_agent"
+                },
+                "json":{
+                    "sign":"${get_sign($user_agent, $device_sn, $os_platform, $app_version)}"
+                },
+                "extract":[
+                    {
+                        "token":"content.token"
+                    }
+                ],
+                "validate":[
+                    {
+                        "eq":[
+                            "status_code",
+                            200
+                        ]
+                    },
+                    {
+                        "eq":[
+                            "headers.Content-Type",
+                            "application/json"
+                        ]
+                    },
+                    {
+                        "eq":[
+                            "content.success",
+                            true
+                        ]
+                    }
+                ],
+                "setup_hooks":[
+
+                ],
+                "teardown_hooks":[
+
+                ]
+            }
+        }
+    }
+]]
+    
+    
+    
+"""
