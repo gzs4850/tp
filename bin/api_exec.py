@@ -3,7 +3,7 @@
 # @Time    : 2019/11/29 16:42
 # @Author  : z.g
 
-from bin import case_load, config_parse, api_send, check_result, field_extract
+from bin import case_load, config_parse, api_send, result_check, field_extract, case_parse
 import json
 
 def load_case(testsuit):
@@ -39,17 +39,27 @@ def load_case(testsuit):
 
 def exec_api(testsuit):
     case_list = load_case(testsuit)
+    variable_dict = {}
     for case in case_list:
-        print("case:%s" %case)
+        print("case:%s" % case)
+        # 字典转字符串str(dict)
+        # 字符串转字典 eval(str)
+        case = eval(case_parse.parse_case(variable_dict, str(case)))
+
+        # 发送请求，返回code，response, headers
         code, result, headers = api_send.send_request(case)
+        # 测试结果持久化
         print(code, result, headers)
 
-        check_result.check(case, code, result, headers)
+        # 结果集验证
+        if result_check.check(case, code, result, headers):
 
-        extract_dict = field_extract.extract(case, result, headers)
-        print(extract_dict)
+            # 提取从响应体、响应头中提取字段值
+            # extract_dict = field_extract.extract(case, result, headers)
+            variable_dict.update(field_extract.extract(case, result, headers))
+            print(variable_dict)
 
-        return code, result, headers
+        # return code, result, headers
 
 
 if __name__ == '__main__':
