@@ -3,7 +3,7 @@
 # @Time    : 2019/11/29 16:42
 # @Author  : z.g
 
-from bin import case_load, config_parse, api_send
+from bin import case_load, config_parse, api_send, check_result, field_extract
 import json
 
 def load_case(testsuit):
@@ -20,7 +20,7 @@ def load_case(testsuit):
         case_dict["timeout"] = int(timeout)
 
         for step in case:
-            print(step)
+            # print(step)
             step_detail = step.get("case")
             case_dict["case_name"] = step_detail.get("name")
             step_request = step_detail.get("request")
@@ -40,16 +40,18 @@ def load_case(testsuit):
 def exec_api(testsuit):
     case_list = load_case(testsuit)
     for case in case_list:
-        code, result = api_send.send_request(case)
-        print(code, result)
+        print("case:%s" %case)
+        code, result, headers = api_send.send_request(case)
+        print(code, result, headers)
 
-        if case.get("case_validate") != None:
-            for validate in case.get("case_validate"):
-                pass
+        check_result.check(case, code, result, headers)
 
-    return code, result
+        extract_dict = field_extract.extract(case, result, headers)
+        print(extract_dict)
+
+        return code, result, headers
 
 
 if __name__ == '__main__':
-    testsuit = '[[{"case":{"name":"7050login","request":{"url":"/ajaxLogin","method":"POST","headers":{"Content-Type": "application/json"},"json":{"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":"false"},"extract":[{"token":"content.data.sessionId"}],"validate":[{"eq":["status_code",200]},{"eq":["headers.Content-Type","application/json"]},{"eq":["content.code","000"]}],"setup_hooks":[],"teardown_hooks":[]}}}],[{"case":{"name":"7050login","request":{"url":"/ajaxLogin","method":"POST","headers":{"Content-Type": "application/json"},"json":{"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":"false"},"extract":[{"token":"content.data.sessionId"}],"validate":[{"eq":["status_code",200]},{"eq":["headers.Content-Type","application/json"]},{"eq":["content.code","000"]}],"setup_hooks":[],"teardown_hooks":[]}}},{"case":{"name":"getUserInfo","request":{"url":"/zlstBigData/permission/user/getUserInfo","method":"GET","headers":{},"json":{},"extract":[],"validate":[{"eq":["status_code",200]},{"eq":["headers.Content-Type","application/json"]},{"eq":["content.code","000"]}],"setup_hooks":[],"teardown_hooks":[]}}}]]'
+    testsuit = '[[{"case":{"name":"7050login","request":{"url":"/ajaxLogin","method":"POST","headers":{"Content-Type": "application/json"},"json":{"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":"false"},"extract":{"rspcode":"content.code","username":"content.data.username","token":"content.data.sessionId"},"validate":{"status_code":200,"headers.Content-Type":"application/json;charset=UTF-8","content.code":"000","content.data.username":"admin"},"setup_hooks":[],"teardown_hooks":[]}}}],[{"case":{"name":"7050login","request":{"url":"/ajaxLogin","method":"POST","headers":{"Content-Type": "application/json"},"json":{"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":"false"},"extract":[{"token":"content.data.sessionId"}],"validate":{"status_code":200,"headers.Content-Type":"application/json","content.code":"000"},"setup_hooks":[],"teardown_hooks":[]}}},{"case":{"name":"getUserInfo","request":{"url":"/zlstBigData/permission/user/getUserInfo","method":"GET","headers":{},"json":{},"extract":[],"validate":{"status_code":200,"headers.Content-Type":"application/json","content.code":"000"},"setup_hooks":[],"teardown_hooks":[]}}}]]'
     exec_api(testsuit)
