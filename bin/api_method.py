@@ -9,7 +9,6 @@ import requests
 import random
 import logging
 import simplejson
-import main
 from requests_toolbelt import MultipartEncoder
 
 
@@ -43,7 +42,7 @@ def post(header, address, request_parameter_type, timeout=8, data=None, files=No
         if response.status_code != 200:
             return response.status_code, response.text
         else:
-            return response.status_code, response.json(), response.headers
+            return response.status_code, response.json(), response.headers, response.elapsed.total_seconds(), response.request.body, response.request.headers
     except json.decoder.JSONDecodeError:
         return response.status_code, ''
     except simplejson.errors.JSONDecodeError:
@@ -67,7 +66,7 @@ def get(header, address, data, timeout=8):
     if response.status_code == 301:
         response = requests.get(url=response.headers["location"])
     try:
-        return response.status_code, response.json(), response.headers
+        return response.status_code, response.json(), response.headers, response.elapsed.total_seconds(), response.request.body, response.request.headers
     except json.decoder.JSONDecodeError:
         return response.status_code, ''
     except simplejson.errors.JSONDecodeError:
@@ -93,7 +92,7 @@ def put(header, address, request_parameter_type, timeout=8, data=None, files=Non
         data = json.dumps(data)
     response = requests.put(url=address, data=data, headers=header, timeout=timeout, files=files)
     try:
-        return response.status_code, response.json(), response.headers
+        return response.status_code, response.json(), response.headers, response.elapsed.total_seconds(), response.request.body, response.request.headers
     except json.decoder.JSONDecodeError:
         return response.status_code, ''
     except simplejson.errors.JSONDecodeError:
@@ -116,7 +115,7 @@ def delete(header, address, data, timeout=8):
     response = requests.delete(url=address, params=data, headers=header, timeout=timeout)
 
     try:
-        return response.status_code, response.json(), response.headers
+        return response.status_code, response.json(), response.headers, response.elapsed.total_seconds(), response.request.body, response.request.headers
     except json.decoder.JSONDecodeError:
         return response.status_code, ''
     except simplejson.errors.JSONDecodeError:
@@ -137,7 +136,8 @@ def save_cookie(header, address, timeout=8, data=None, files=None):
     :param files: 文件路径
     :return:
     """
-    cookie_path = main.PATH + '/bin/cookie.txt'
+    PATH = os.getcwd()
+    cookie_path = PATH + '/cookie.txt'
     response = requests.post(url=address, data=data, headers=header, timeout=timeout, files=files)
     try:
         cookie = response.cookies.get_dict()

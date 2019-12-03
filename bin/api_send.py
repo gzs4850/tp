@@ -6,11 +6,7 @@
 import logging
 import allure
 import json
-from bin import api_method, case_load, case_parse
-# from bin.unit import apiMethod, replaceRelevance
-# from bin.unit import initializeCookie
-# from bin.config import confManage
-# from bin.unit import readParameter
+from bin import api_method, cookie_oper
 
 
 def send_request(case_dict):
@@ -25,6 +21,8 @@ def send_request(case_dict):
     """
     logging.info("="*100)
     headers = case_dict["case_headers"]
+    if case_dict.get("case_cookie") == 'Y':
+        headers["Cookie"] = cookie_oper.get_cookie()
     logging.debug("请求头处理结果：%s" % headers)
 
     # print("请求头处理结果：%s" % headers)
@@ -43,6 +41,14 @@ def send_request(case_dict):
     logging.info("请求地址：%s" % case_dict["http_type"] + "://" + case_dict["host"] + case_dict["case_url"])
     logging.info("请求头: %s" % str(headers))
     logging.info("请求参数: %s" % str(parameter))
+
+    if case_dict["case_name"] == '登录':
+        with allure.step("保存cookie信息"):
+            allure.attach("请求接口：", str(case_dict["case_name"]))
+            allure.attach("请求地址", case_dict["http_type"] + "://" + case_dict["host"] + case_dict["case_url"])
+            allure.attach("请求头", str(headers))
+            allure.attach("请求参数", str(parameter))
+            api_method.save_cookie(header=headers, address=case_dict["http_type"] + "://" + case_dict["host"] + case_dict["case_url"], data=parameter)
 
     if case_dict["case_method"].lower() == 'post':
         logging.info("请求方法: POST")
