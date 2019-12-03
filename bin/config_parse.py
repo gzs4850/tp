@@ -12,13 +12,28 @@ import os
 
 
 def get_config(section, option):
-    root_dir = os.path.abspath('.')
-    configpath = os.path.join(root_dir, "config.ini")
+    # root_dir = os.path.abspath('.')
+    # configpath = os.path.join(root_dir, "config.ini")
+    conf_path = 'D:/code/tp/bin/config.ini'
     config = configparser.ConfigParser()
-    config.read(configpath)
+    config.read(conf_path)
     return config.get(section, option)
 
+# class ReadConfig:
+#
+#     def __init__(self):
+#         conf_path = 'D:/code/tp/bin/config.ini'
+#         print(conf_path)
+#         self.cf = configparser.ConfigParser()
+#         self.cf.read(conf_path)
+#
+#     def get_env(self, param):
+#         value = self.cf.get("ENV", param)
+#         return value
 
 if __name__ == '__main__':
     value = get_config("ENV", "host")
     print(value)
+    # rc = ReadConfig()
+    # host = rc.get_env("host")
+    # print(host)

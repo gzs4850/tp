@@ -137,8 +137,8 @@ def save_cookie(header, address, timeout=8, data=None, files=None):
     :param files: 文件路径
     :return:
     """
-    PATH = os.getcwd()
-    cookie_path = PATH + '/cookie.txt'
+    # PATH = os.getcwd()
+    cookie_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../logs')) + '/cookie.txt'
     response = requests.post(url=address, data=data, headers=header, timeout=timeout, files=files)
     try:
         cookie = response.cookies.get_dict()

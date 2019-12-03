@@ -7,13 +7,15 @@ import os
 import subprocess
 import pytest
 
-PATH = os.getcwd()
+PATH = os.path.split(os.path.realpath(__file__))[0]
 xml_report_path = PATH + "/report/xml"
 html_report_path = PATH + "/report/html"
 
 def invoke(cmd):
+    print(cmd)
     output, errors = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     o = output.decode("utf-8")
+    print(o)
     return o
 
 
