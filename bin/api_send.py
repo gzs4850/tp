@@ -3,11 +3,11 @@
 # @Time    : 2019/11/26 15:37
 # @Author  : z.g
 
-import logging
 import allure
 import json
-from bin import api_method, cookie_oper
+from bin import api_method, cookie_oper, log
 
+Logger = log.Log()
 
 def send_request(case_dict):
     """
@@ -19,11 +19,11 @@ def send_request(case_dict):
     :param _path: case路径
     :return:
     """
-    logging.info("="*100)
+    Logger.info("="*100)
     headers = case_dict["case_headers"]
     if case_dict.get("case_cookie") == 'Y':
         headers["Cookie"] = cookie_oper.get_cookie()
-    logging.debug("请求头处理结果：%s" % headers)
+    Logger.debug("请求头处理结果：%s" % headers)
 
     # print("请求头处理结果：%s" % headers)
     if case_dict["case_file"] is not None:
@@ -32,15 +32,15 @@ def send_request(case_dict):
     else:
         parameter = json.dumps(case_dict["case_json"])
         # print("请求参数处理结果：%s" % case_dict["case_json"])
-    logging.debug("请求参数处理结果：%s" % parameter)
+    Logger.debug("请求参数处理结果：%s" % parameter)
 
     host = case_dict["host"]
-    logging.debug("host处理结果： %s" % host)
+    Logger.debug("host处理结果： %s" % host)
 
-    logging.info("请求接口：%s" % str(case_dict["case_name"]))
-    logging.info("请求地址：%s" % case_dict["http_type"] + "://" + case_dict["host"] + case_dict["case_url"])
-    logging.info("请求头: %s" % str(headers))
-    logging.info("请求参数: %s" % str(parameter))
+    Logger.info("请求接口：%s" % str(case_dict["case_name"]))
+    Logger.info("请求地址：%s" % case_dict["http_type"] + "://" + case_dict["host"] + case_dict["case_url"])
+    Logger.info("请求头: %s" % str(headers))
+    Logger.info("请求参数: %s" % str(parameter))
 
     if case_dict["case_name"] == '登录':
         with allure.step("保存cookie信息"):
@@ -51,7 +51,7 @@ def send_request(case_dict):
             api_method.save_cookie(header=headers, address=case_dict["http_type"] + "://" + case_dict["host"] + case_dict["case_url"], data=parameter)
 
     if case_dict["case_method"].lower() == 'post':
-        logging.info("请求方法: POST")
+        Logger.info("请求方法: POST")
         if case_dict["case_file"]:
             with allure.step("POST上传文件"):
                 allure.attach("请求接口：",str(case_dict["case_name"]))
@@ -83,14 +83,14 @@ def send_request(case_dict):
             allure.attach("请求地址", case_dict["http_type"] + "://" + case_dict["host"] + case_dict["case_url"])
             allure.attach("请求头", str(headers))
             allure.attach("请求参数", str(parameter))
-            logging.info("请求方法: GET")
+            Logger.info("请求方法: GET")
         result = api_method.get(header=headers,
                                 address=case_dict["http_type"] + "://" + case_dict["host"] + case_dict["case_url"],
                                 data=parameter,
                                 timeout=case_dict["timeout"])
 
     elif case_dict["case_method"].lower() == 'put':
-        logging.info("请求方法: PUT")
+        Logger.info("请求方法: PUT")
         if case_dict["case_file"]:
             with allure.step("PUT上传文件"):
                 allure.attach("请求接口：", str(case_dict["case_name"]))
@@ -121,14 +121,14 @@ def send_request(case_dict):
             allure.attach("请求地址", case_dict["http_type"] + "://" + case_dict["host"] + case_dict["case_url"])
             allure.attach("请求头", str(headers))
             allure.attach("请求参数", str(parameter))
-        logging.info("请求方法: DELETE")
+        Logger.info("请求方法: DELETE")
         result = api_method.get(header=headers,
                                 address=case_dict["http_type"] + "://" + case_dict["host"] + case_dict["case_url"],
                                 data=parameter,
                                 timeout=case_dict["timeout"])
     else:
         result = {"code": False, "data": False}
-    logging.info("请求接口结果：\n %s" % str(result))
+    Logger.info("请求接口结果：\n %s" % str(result))
     return result
 
 

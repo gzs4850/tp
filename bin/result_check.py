@@ -3,14 +3,9 @@
 # @Time    : 2019/12/2 9:47
 # @Author  : z.g
 import allure
-import json
+from bin import log
 
-# def is_json(result):
-#     try:
-#         json.load(result)
-#     except ValueError:
-#         return False
-#     return True
+Logger = log.Log()
 
 def check_data(key, exp_dict, data):
     temp = {}
@@ -26,9 +21,11 @@ def check_data(key, exp_dict, data):
             allure.attach("期望结果", str(exp_dict[key]))
             allure.attach("实际结果", str(temp[key]))
         # print("pass %s %s" % (key, temp[key]))
+        Logger.info("断言成功：%s 期望结果 %s, 实际结果 %s" % (key, str(temp[key]), str(exp_dict[key])))
         return True
     else:
-        print("fail %s, expect value is %s, real value is %s" % (key, exp_dict[key], temp[key]))
+        # print("fail %s, expect value is %s, real value is %s" % (key, exp_dict[key], temp[key]))
+        Logger.error("断言失败：%s 期望结果 %s, 实际结果 %s" % (key, exp_dict[key], temp[key]))
         return False
 
 def check(case, code, content, headers):
@@ -42,10 +39,12 @@ def check(case, code, content, headers):
                 allure.attach("实际结果", str(code))
             if key == "status_code":
                 if exp_dict["status_code"] == code:
+                    Logger.info("断言成功：%s 期望结果 %s, 实际结果 %s" % (key, exp_dict["status_code"], code))
                     # print("pass %s:%s" %(key, code))
                     pass
                 else:
-                    print("fail, expect value is %s, real value is %s" %(exp_dict["status_code"], code))
+                    Logger.error("断言失败：%s 期望结果 %s, 实际结果 %s" % (exp_dict["status_code"], code))
+                    # print("fail, expect value is %s, real value is %s" %(exp_dict["status_code"], code))
                     return False
 
             elif key.split(".")[0] == "headers":
@@ -55,5 +54,6 @@ def check(case, code, content, headers):
 
     else:
         allure.step("不需要校验结果")
+        Logger.info("不需要校验结果")
     return True
 

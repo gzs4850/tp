@@ -3,8 +3,10 @@
 # @Time    : 2019/11/29 16:42
 # @Author  : z.g
 
-from bin import case_load, config_parse, api_send, result_check, field_extract, case_parse
+from bin import config_parse, api_send, result_check, field_extract, case_parse, log
 import json
+
+Logger = log.Log()
 
 def load_case(testsuit):
     # print("testsuit: %s" % testsuit)
@@ -55,13 +57,21 @@ def exec_api(testsuit):
             # 发送请求，返回code，response, headers
             code, result, headers, elapsedtime, req_data, req_header= api_send.send_request(case)
             # 测试结果持久化
-            print(code, result, headers, elapsedtime, req_data, req_header)
+            Logger.info("用例 %s 请求头： %s" % (case.get("case_name"), req_header))
+            Logger.info("用例 %s 请求体： \n %s" % (case.get("case_name"), req_data))
+            Logger.info("用例 %s 响应状态码： %s" % (case.get("case_name"), code))
+            Logger.info("用例 %s 响应头： %s" % (case.get("case_name"), headers))
+            Logger.info("用例 %s 响应体： \n %s" % (case.get("case_name"), result))
+
+            # print(code, result, headers, elapsedtime, req_data, req_header)
 
             # 结果集验证
             if result_check.check(case, code, result, headers):
-                print("用例 %s 测试通过" %case.get("case_name"))
+                Logger.info("用例 %s 测试通过" %case.get("case_name"))
+                # print("用例 %s 测试通过" %case.get("case_name"))
             else:
-                print("用例 %s 测试失败" % case.get("case_name"))
+                Logger.error("用例 %s 测试失败" % case.get("case_name"))
+                # print("用例 %s 测试失败" % case.get("case_name"))
 
             # 从响应体、响应头中提取字段值
             variable_dict.update(field_extract.extract(case, result, headers))
@@ -72,5 +82,4 @@ def exec_api(testsuit):
 
 if __name__ == '__main__':
     testsuit = '[[{"case":{"name":"管理员登录","request":{"variable":{"username":"admin"},"url":"/ajaxLogin","method":"POST","headers":{"Content-Type": "application/json"},"json":{"username":"${username}","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":"false"},"extract":{"rspcode":"content.code","username":"content.data.username","token":"content.data.sessionId"},"validate":{"status_code":200,"headers.Content-Type":"application/json;charset=UTF-8","content.code":"000","content.data.username":"admin"},"setup_hooks":[],"teardown_hooks":[]}}}],[{"case":{"name":"登录","request":{"variable":{},"url":"/ajaxLogin","method":"POST","headers":{"Content-Type": "application/json"},"json":{"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":"false"},"extract":{"rspcode":"content.code","username":"content.data.username","token":"content.data.sessionId"},"validate":{"status_code":200,"headers.Content-Type":"application/json;charset=UTF-8","content.code":"000","content.data.username":"admin"},"setup_hooks":[],"teardown_hooks":[]}}},{"case":{"name":"getUserInfo","request":{"variable":{},"cookie":"Y","url":"/zlstBigData/permission/user/getUserInfo","method":"GET","headers":{},"json":{},"extract":[],"validate":{"status_code":200,"headers.Content-Type":"application/json","content.code":"000"},"setup_hooks":[],"teardown_hooks":[]}}}]]'
-    # testsuit = '[[{"case":{"name":"管理员登录","request":{"variable":{"username":"admin"},"url":"/ajaxLogin","method":"POST","headers":{"Content-Type": "application/json"},"json":{"username":"${username}","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":"false"},"extract":{"rspcode":"content.code","username":"content.data.username","token":"content.data.sessionId"},"validate":{"status_code":200,"headers.Content-Type":"application/json;charset=UTF-8","content.code":"000","content.data.username":"admin"},"setup_hooks":[],"teardown_hooks":[]}}}],[{"case":{"name":"登录","request":{"variable":{},"url":"/ajaxLogin","method":"POST","headers":{"Content-Type": "application/json"},"json":{"username":"admin","password":"e10adc3949ba59abbe56e057f20f883e","isRememberPwd":"false"},"extract":{"rspcode":"content.code","username":"content.data.username","token":"content.data.sessionId"},"validate":{"status_code":200,"headers.Content-Type":"application/json;charset=UTF-8","content.code":"000","content.data.username":"admin"},"setup_hooks":[],"teardown_hooks":[]}}},{"case":{"name":"getUserInfo","request":{"variable":{},url":"/zlstBigData/permission/user/getUserInfo","method":"GET","headers":{},"json":{},"extract":[],"validate":{"status_code":200,"headers.Content-Type":"application/json","content.code":"000"},"setup_hooks":[],"teardown_hooks":[]}}}]]'
     exec_api(testsuit)

@@ -7,7 +7,7 @@ import os
 import subprocess
 import pytest
 
-PATH = os.path.split(os.path.realpath(__file__))[0]
+PATH = os.getcwd()
 xml_report_path = PATH + "/report/xml"
 html_report_path = PATH + "/report/html"
 

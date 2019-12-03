@@ -7,10 +7,11 @@ import json
 import os
 import requests
 import random
-import logging
 import simplejson
 from requests_toolbelt import MultipartEncoder
+from bin import log
 
+Logger = log.Log()
 
 def post(header, address, request_parameter_type, timeout=8, data=None, files=None):
     """
@@ -48,8 +49,8 @@ def post(header, address, request_parameter_type, timeout=8, data=None, files=No
     except simplejson.errors.JSONDecodeError:
         return response.status_code, ''
     except Exception as e:
-        logging.exception('ERROR')
-        logging.error(e)
+        Logger.exception('ERROR')
+        Logger.error(e)
         raise
 
 
@@ -72,8 +73,8 @@ def get(header, address, data, timeout=8):
     except simplejson.errors.JSONDecodeError:
         return response.status_code, ''
     except Exception as e:
-        logging.exception('ERROR')
-        logging.error(e)
+        Logger.exception('ERROR')
+        Logger.error(e)
         raise
 
 
@@ -98,8 +99,8 @@ def put(header, address, request_parameter_type, timeout=8, data=None, files=Non
     except simplejson.errors.JSONDecodeError:
         return response.status_code, ''
     except Exception as e:
-        logging.exception('ERROR')
-        logging.error(e)
+        Logger.exception('ERROR')
+        Logger.error(e)
         raise
 
 
@@ -121,8 +122,8 @@ def delete(header, address, data, timeout=8):
     except simplejson.errors.JSONDecodeError:
         return response.status_code, ''
     except Exception as e:
-        logging.exception('ERROR')
-        logging.error(e)
+        Logger.exception('ERROR')
+        Logger.error(e)
         raise
 
 
@@ -145,12 +146,12 @@ def save_cookie(header, address, timeout=8, data=None, files=None):
             values = cookie[i]
             with open(cookie_path, 'w+', encoding='utf-8')as f:
                 f.write(i+"="+values)
-            logging.debug("cookies已保存，结果为：%s" % (i+"="+values))
+            Logger.debug("cookies已保存，结果为：%s" % (i+"="+values))
     except json.decoder.JSONDecodeError:
         return response.status_code, ''
     except simplejson.errors.JSONDecodeError:
         return response.status_code, ''
     except Exception as e:
-        logging.exception('ERROR')
-        logging.error(e)
+        Logger.exception('ERROR')
+        Logger.error(e)
         raise

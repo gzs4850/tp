@@ -3,6 +3,10 @@
 # @Time    : 2019/12/2 16:51
 # @Author  : z.g
 
+from bin import log
+
+Logger = log.Log()
+
 def extract(case, content, headers):
     extract_dict = {}
 
@@ -10,8 +14,10 @@ def extract(case, content, headers):
         for key in case.get("case_extract"):
             if case.get("case_extract").get(key).split(".")[0] == "headers":
                 extract_dict[key]=(extract_data(case.get("case_extract").get(key), headers))
+                Logger.info("响应头提取字段: %s %s" % (key, extract_dict[key]))
             elif case.get("case_extract").get(key).split(".")[0] == "content":
                 extract_dict[key]=(extract_data(case.get("case_extract").get(key), content))
+                Logger.info("响应体提取字段: %s %s" % (key, extract_dict[key]))
         return extract_dict
 
     else:
