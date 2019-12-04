@@ -9,6 +9,7 @@ import requests
 import random
 import simplejson
 from requests_toolbelt import MultipartEncoder
+from requests import exceptions
 from bin import log
 
 Logger = log.Log()
@@ -41,17 +42,21 @@ def post(header, address, request_parameter_type, timeout=8, data=None, files=No
         response = requests.post(url=address, data=data, headers=header, timeout=timeout, files=files)
     try:
         if response.status_code != 200:
-            return response.status_code, response.text
+            return response.status_code, response.text, response.headers, response.elapsed.total_seconds(), response.request.body, response.request.headers
         else:
             return response.status_code, response.json(), response.headers, response.elapsed.total_seconds(), response.request.body, response.request.headers
     except json.decoder.JSONDecodeError:
         return response.status_code, ''
     except simplejson.errors.JSONDecodeError:
         return response.status_code, ''
+    except exceptions.Timeout as e:
+        Logger.exception(e)
+        Logger.error(e)
+        pass
     except Exception as e:
         Logger.exception('ERROR')
         Logger.error(e)
-        raise
+        pass
 
 
 def get(header, address, data, timeout=8):

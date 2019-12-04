@@ -9,8 +9,11 @@ Logger = log.Log()
 
 def extract(case, content, headers):
     extract_dict = {}
+    if isinstance(content, str):
+        content = eval(content)
 
     if case.get("case_extract") != None:
+        Logger.info("响应提取字段: %s " % case.get("case_extract"))
         for key in case.get("case_extract"):
             if case.get("case_extract").get(key).split(".")[0] == "headers":
                 extract_dict[key]=(extract_data(case.get("case_extract").get(key), headers))
@@ -29,6 +32,14 @@ def extract_data(key, data):
     for i in range(1, len(locator)):
         if i == 1:
             temp[key] = data.get(locator[i])
+            if temp[key] == None:
+                Logger.error("从 %s 中提取字段 %s 失败" % (data, key))
+                return temp
         else:
-            temp[key] = temp[key].get(locator[i])
+            try:
+                temp[key] = temp[key].get(locator[i])
+            except Exception as e:
+                Logger.error("从 %s 中提取字段 %s 失败" % (temp[key], key))
+                Logger.error(e)
+                # pass
     return temp[key]

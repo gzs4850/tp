@@ -55,13 +55,24 @@ def exec_api(testsuit):
             case = eval(case_parse.parse_case(variable_dict, str(case)))
 
             # 发送请求，返回code，response, headers
-            code, result, headers, elapsedtime, req_data, req_header= api_send.send_request(case)
+            response = api_send.send_request(case)
+            # print(response)
+
+            code = response[0]
+            result = response[1]
+            headers = response[2]
+            elapsedtime = response[3]
+            req_data = response[4]
+            req_header = response[5]
+
+            # code, result, headers, elapsedtime, req_data, req_header= api_send.send_request(case)
             # 测试结果持久化
             Logger.info("用例 %s 请求头： %s" % (case.get("case_name"), req_header))
             Logger.info("用例 %s 请求体： \n %s" % (case.get("case_name"), req_data))
             Logger.info("用例 %s 响应状态码： %s" % (case.get("case_name"), code))
             Logger.info("用例 %s 响应头： %s" % (case.get("case_name"), headers))
             Logger.info("用例 %s 响应体： \n %s" % (case.get("case_name"), result))
+            Logger.info("用例 %s 响应时长： %s" % (case.get("case_name"), elapsedtime))
 
             # print(code, result, headers, elapsedtime, req_data, req_header)
 
