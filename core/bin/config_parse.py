@@ -14,7 +14,7 @@ import os
 def get_config(section, option):
     # root_dir = os.path.abspath('.')
     # configpath = os.path.join(root_dir, "config.ini")
-    conf_path = 'D:/code/tp/bin/config.ini'
+    conf_path = 'D:/code/tp/core/bin/config.ini'
     config = configparser.ConfigParser()
     config.read(conf_path)
     return config.get(section, option)

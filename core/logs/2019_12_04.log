@@ -1,0 +1,66 @@
+[2019-12-04 15:55:48,278] [log.py] [INFO]: ====================================================================================================
+[2019-12-04 15:55:48,279] [log.py] [INFO]: 请求接口：管理员登录
+[2019-12-04 15:55:48,279] [log.py] [INFO]: 请求地址：http://192.168.18.37:8097/ajaxLogin
+[2019-12-04 15:55:48,279] [log.py] [INFO]: 请求头: {'Content-Type': 'application/json'}
+[2019-12-04 15:55:48,279] [log.py] [INFO]: 请求参数: {"username": "admin", "password": "e10adc3949ba59abbe56e057f20f883e", "isRememberPwd": "false"}
+[2019-12-04 15:55:48,280] [log.py] [INFO]: 请求方法: POST
+[2019-12-04 15:55:48,382] [log.py] [INFO]: 请求接口结果：
+ (200, {'code': '000', 'errorMsg': '', 'data': {'userId': 2, 'username': 'admin', 'password': 'e10adc3949ba59abbe56e057f20f883e', 'orgId': 1, 'userStatus': 1, 'createId': 123, 'createTime': '2019-05-25 11:52:26', 'modifyId': 2, 'modifyTime': '2019-05-25 11:52:26', 'orgType': 'Corp', 'defaultAppCode': 'seventyfifty', 'allSys': ['seventyfifty', 'permission'], 'orgName': '中铝集团', 'sessionId': 'fb222f90-2c99-4257-95fd-ecae30158e7c'}, 'message': None, 'status': None}, {'Set-Cookie': 'JSESSIONID=fb222f90-2c99-4257-95fd-ecae30158e7c; Path=/; HttpOnly, rememberMe=deleteMe; Path=/; Max-Age=0; Expires=Tue, 03-Dec-2019 07:55:51 GMT', 'Content-Type': 'application/json;charset=UTF-8', 'Transfer-Encoding': 'chunked', 'Date': 'Wed, 04 Dec 2019 07:55:51 GMT'}, 0.086, '{"username": "admin", "password": "e10adc3949ba59abbe56e057f20f883e", "isRememberPwd": "false"}', {'User-Agent': 'python-requests/2.22.0', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'Content-Length': '95'})
+[2019-12-04 15:55:48,383] [log.py] [INFO]: 用例 管理员登录 请求头： {'User-Agent': 'python-requests/2.22.0', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'Content-Length': '95'}
+[2019-12-04 15:55:48,384] [log.py] [INFO]: 用例 管理员登录 请求体： 
+ {"username": "admin", "password": "e10adc3949ba59abbe56e057f20f883e", "isRememberPwd": "false"}
+[2019-12-04 15:55:48,384] [log.py] [INFO]: 用例 管理员登录 响应状态码： 200
+[2019-12-04 15:55:48,384] [log.py] [INFO]: 用例 管理员登录 响应头： {'Set-Cookie': 'JSESSIONID=fb222f90-2c99-4257-95fd-ecae30158e7c; Path=/; HttpOnly, rememberMe=deleteMe; Path=/; Max-Age=0; Expires=Tue, 03-Dec-2019 07:55:51 GMT', 'Content-Type': 'application/json;charset=UTF-8', 'Transfer-Encoding': 'chunked', 'Date': 'Wed, 04 Dec 2019 07:55:51 GMT'}
+[2019-12-04 15:55:48,384] [log.py] [INFO]: 用例 管理员登录 响应体： 
+ {'code': '000', 'errorMsg': '', 'data': {'userId': 2, 'username': 'admin', 'password': 'e10adc3949ba59abbe56e057f20f883e', 'orgId': 1, 'userStatus': 1, 'createId': 123, 'createTime': '2019-05-25 11:52:26', 'modifyId': 2, 'modifyTime': '2019-05-25 11:52:26', 'orgType': 'Corp', 'defaultAppCode': 'seventyfifty', 'allSys': ['seventyfifty', 'permission'], 'orgName': '中铝集团', 'sessionId': 'fb222f90-2c99-4257-95fd-ecae30158e7c'}, 'message': None, 'status': None}
+[2019-12-04 15:55:48,385] [log.py] [INFO]: 用例 管理员登录 响应时长： 0.086
+[2019-12-04 15:55:48,387] [log.py] [INFO]: 断言成功：status_code 期望结果 200, 实际结果 200
+[2019-12-04 15:55:48,387] [log.py] [INFO]: 断言成功：headers.Content-Type 期望结果 application/json;charset=UTF-8, 实际结果 application/json;charset=UTF-8
+[2019-12-04 15:55:48,388] [log.py] [INFO]: 用例 管理员登录 测试通过
+[2019-12-04 15:55:48,388] [log.py] [INFO]: 响应提取字段: {'rspcode': 'content.code', 'username': 'content.data.username', 'token': 'content.data.sessionId'} 
+[2019-12-04 15:55:48,388] [log.py] [INFO]: 响应体提取字段: rspcode 000
+[2019-12-04 15:55:48,388] [log.py] [INFO]: 响应体提取字段: username admin
+[2019-12-04 15:55:48,388] [log.py] [INFO]: 响应体提取字段: token fb222f90-2c99-4257-95fd-ecae30158e7c
+[2019-12-04 15:55:48,388] [log.py] [INFO]: ====================================================================================================
+[2019-12-04 15:55:48,390] [log.py] [INFO]: 请求接口：登录
+[2019-12-04 15:55:48,390] [log.py] [INFO]: 请求地址：http://192.168.18.37:8097/ajaxLogin
+[2019-12-04 15:55:48,391] [log.py] [INFO]: 请求头: {'Content-Type': 'application/json'}
+[2019-12-04 15:55:48,391] [log.py] [INFO]: 请求参数: {"username": "admin", "password": "e10adc3949ba59abbe56e057f20f883e", "isRememberPwd": "false"}
+[2019-12-04 15:55:48,428] [log.py] [INFO]: 请求方法: POST
+[2019-12-04 15:55:48,471] [log.py] [INFO]: 请求接口结果：
+ (200, {'code': '000', 'errorMsg': '', 'data': {'userId': 2, 'username': 'admin', 'password': 'e10adc3949ba59abbe56e057f20f883e', 'orgId': 1, 'userStatus': 1, 'createId': 123, 'createTime': '2019-05-25 11:52:26', 'modifyId': 2, 'modifyTime': '2019-05-25 11:52:26', 'orgType': 'Corp', 'defaultAppCode': 'seventyfifty', 'allSys': ['seventyfifty', 'permission'], 'orgName': '中铝集团', 'sessionId': 'f2eea2a5-3b23-49b3-a36a-64613f47e026'}, 'message': None, 'status': None}, {'Set-Cookie': 'JSESSIONID=f2eea2a5-3b23-49b3-a36a-64613f47e026; Path=/; HttpOnly, rememberMe=deleteMe; Path=/; Max-Age=0; Expires=Tue, 03-Dec-2019 07:55:52 GMT', 'Content-Type': 'application/json;charset=UTF-8', 'Transfer-Encoding': 'chunked', 'Date': 'Wed, 04 Dec 2019 07:55:51 GMT'}, 0.040169, '{"username": "admin", "password": "e10adc3949ba59abbe56e057f20f883e", "isRememberPwd": "false"}', {'User-Agent': 'python-requests/2.22.0', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'Content-Length': '95'})
+[2019-12-04 15:55:48,473] [log.py] [INFO]: 用例 登录 请求头： {'User-Agent': 'python-requests/2.22.0', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'Content-Length': '95'}
+[2019-12-04 15:55:48,473] [log.py] [INFO]: 用例 登录 请求体： 
+ {"username": "admin", "password": "e10adc3949ba59abbe56e057f20f883e", "isRememberPwd": "false"}
+[2019-12-04 15:55:48,473] [log.py] [INFO]: 用例 登录 响应状态码： 200
+[2019-12-04 15:55:48,473] [log.py] [INFO]: 用例 登录 响应头： {'Set-Cookie': 'JSESSIONID=f2eea2a5-3b23-49b3-a36a-64613f47e026; Path=/; HttpOnly, rememberMe=deleteMe; Path=/; Max-Age=0; Expires=Tue, 03-Dec-2019 07:55:52 GMT', 'Content-Type': 'application/json;charset=UTF-8', 'Transfer-Encoding': 'chunked', 'Date': 'Wed, 04 Dec 2019 07:55:51 GMT'}
+[2019-12-04 15:55:48,475] [log.py] [INFO]: 用例 登录 响应体： 
+ {'code': '000', 'errorMsg': '', 'data': {'userId': 2, 'username': 'admin', 'password': 'e10adc3949ba59abbe56e057f20f883e', 'orgId': 1, 'userStatus': 1, 'createId': 123, 'createTime': '2019-05-25 11:52:26', 'modifyId': 2, 'modifyTime': '2019-05-25 11:52:26', 'orgType': 'Corp', 'defaultAppCode': 'seventyfifty', 'allSys': ['seventyfifty', 'permission'], 'orgName': '中铝集团', 'sessionId': 'f2eea2a5-3b23-49b3-a36a-64613f47e026'}, 'message': None, 'status': None}
+[2019-12-04 15:55:48,475] [log.py] [INFO]: 用例 登录 响应时长： 0.040169
+[2019-12-04 15:55:48,475] [log.py] [INFO]: 断言成功：status_code 期望结果 200, 实际结果 200
+[2019-12-04 15:55:48,476] [log.py] [INFO]: 断言成功：headers.Content-Type 期望结果 application/json;charset=UTF-8, 实际结果 application/json;charset=UTF-8
+[2019-12-04 15:55:48,476] [log.py] [INFO]: 用例 登录 测试通过
+[2019-12-04 15:55:48,476] [log.py] [INFO]: 响应提取字段: {'rspcode': 'content.code', 'username': 'content.data.username', 'token': 'content.data.sessionId'} 
+[2019-12-04 15:55:48,476] [log.py] [INFO]: 响应体提取字段: rspcode 000
+[2019-12-04 15:55:48,476] [log.py] [INFO]: 响应体提取字段: username admin
+[2019-12-04 15:55:48,476] [log.py] [INFO]: 响应体提取字段: token f2eea2a5-3b23-49b3-a36a-64613f47e026
+[2019-12-04 15:55:48,478] [log.py] [INFO]: ====================================================================================================
+[2019-12-04 15:55:48,479] [log.py] [INFO]: 请求接口：getUserInfo
+[2019-12-04 15:55:48,479] [log.py] [INFO]: 请求地址：http://192.168.18.37:8097/zlstBigData/permission/user/getUserInfo
+[2019-12-04 15:55:48,479] [log.py] [INFO]: 请求头: {'Cookie': 'JSESSIONID=c058b677-53b7-4924-964f-3d23850c2474'}
+[2019-12-04 15:55:48,480] [log.py] [INFO]: 请求参数: {}
+[2019-12-04 15:55:48,480] [log.py] [INFO]: 请求方法: GET
+[2019-12-04 15:55:48,512] [log.py] [INFO]: 请求接口结果：
+ (200, {'code': '000', 'errorMsg': '', 'data': {'orgType': 'Corp', 'orgName': '中铝集团', 'allSys': ['seventyfifty', 'permission'], 'id': None, 'username': 'admin', 'orgId': 1, 'defaultAppCode': 'seventyfifty'}}, {'Content-Type': 'application/json;charset=UTF-8', 'Transfer-Encoding': 'chunked', 'Date': 'Wed, 04 Dec 2019 07:55:51 GMT'}, 0.028793, None, {'User-Agent': 'python-requests/2.22.0', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Cookie': 'JSESSIONID=c058b677-53b7-4924-964f-3d23850c2474'})
+[2019-12-04 15:55:48,512] [log.py] [INFO]: 用例 getUserInfo 请求头： {'User-Agent': 'python-requests/2.22.0', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Cookie': 'JSESSIONID=c058b677-53b7-4924-964f-3d23850c2474'}
+[2019-12-04 15:55:48,512] [log.py] [INFO]: 用例 getUserInfo 请求体： 
+ None
+[2019-12-04 15:55:48,513] [log.py] [INFO]: 用例 getUserInfo 响应状态码： 200
+[2019-12-04 15:55:48,513] [log.py] [INFO]: 用例 getUserInfo 响应头： {'Content-Type': 'application/json;charset=UTF-8', 'Transfer-Encoding': 'chunked', 'Date': 'Wed, 04 Dec 2019 07:55:51 GMT'}
+[2019-12-04 15:55:48,513] [log.py] [INFO]: 用例 getUserInfo 响应体： 
+ {'code': '000', 'errorMsg': '', 'data': {'orgType': 'Corp', 'orgName': '中铝集团', 'allSys': ['seventyfifty', 'permission'], 'id': None, 'username': 'admin', 'orgId': 1, 'defaultAppCode': 'seventyfifty'}}
+[2019-12-04 15:55:48,513] [log.py] [INFO]: 用例 getUserInfo 响应时长： 0.028793
+[2019-12-04 15:55:48,513] [log.py] [INFO]: 断言成功：status_code 期望结果 200, 实际结果 200
+[2019-12-04 15:55:48,513] [log.py] [ERROR]: 断言失败：headers.Content-Type 期望结果 application/json, 实际结果 application/json;charset=UTF-8
+[2019-12-04 15:55:48,515] [log.py] [ERROR]: 用例 getUserInfo 测试失败
+[2019-12-04 15:55:48,515] [log.py] [INFO]: 响应提取字段: [] 

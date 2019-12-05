@@ -3,7 +3,7 @@
 # @Time    : 2019/12/2 16:51
 # @Author  : z.g
 
-from bin import log
+from core.bin import log
 
 Logger = log.Log()
 

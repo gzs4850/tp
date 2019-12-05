@@ -4,7 +4,7 @@
 # @Author  : z.g
 
 import re
-from bin.func import *
+
 
 #global var_dict, extract_dict
 #var_dict = {}

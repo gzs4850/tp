@@ -3,7 +3,7 @@
 # @Time    : 2019/12/2 9:47
 # @Author  : z.g
 import allure
-from bin import log
+from core.bin import log
 
 Logger = log.Log()
 

@@ -3,7 +3,7 @@
 # @Time    : 2019/11/29 16:42
 # @Author  : z.g
 
-from bin import config_parse, api_send, result_check, field_extract, case_parse, log
+from core.bin import config_parse, api_send, result_check, field_extract, case_parse, log
 import json
 
 Logger = log.Log()

@@ -4,7 +4,7 @@
 # @Author  : z.g
 
 import pymysql
-from bin.config_parse import get_config
+from core.bin import get_config
 
 class MysqlConnect(object):
     # 魔术方法, 初始化, 构造函数

@@ -10,7 +10,7 @@ import random
 import simplejson
 from requests_toolbelt import MultipartEncoder
 from requests import exceptions
-from bin import log
+from core.bin import log
 
 Logger = log.Log()
 

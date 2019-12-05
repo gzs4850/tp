@@ -5,7 +5,7 @@
 
 import allure
 import json
-from bin import api_method, cookie_oper, log
+from core.bin import api_method, cookie_oper, log
 
 Logger = log.Log()
 
