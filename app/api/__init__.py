@@ -2,4 +2,4 @@ from flask import Blueprint
 
 api = Blueprint('api', __name__)
 
-from . import projects, systems, interfaces, testcases, testresult, errors
+from . import projects, systems, interfaces, testcases, testresult, errors, user

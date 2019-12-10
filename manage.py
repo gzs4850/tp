@@ -7,6 +7,7 @@ from flask_migrate import Migrate, MigrateCommand
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 app.debug=True
+app.config['JSON_AS_ASCII'] = False
 CORS(app)
 manager = Manager(app)
 migrate = Migrate(app, db)

@@ -6,8 +6,8 @@ from . import api
 from flask import jsonify
 
 
-@api.route('/user/login')
-def login(id):
+@api.route('/user/login', methods=['POST'])
+def login():
     return jsonify({
         'code': 1,
         'token': 'fdsjfhjkdshfkldsajfjasdfbjsdkfhsdajfj',
@@ -19,15 +19,15 @@ def login(id):
     })
 
 
-@api.route('/user/register')
-def register(id):
+@api.route('/user/register', methods=['POST'])
+def register():
     return jsonify({
         'code': 1
     })
 
 
-@api.route('/user/info')
-def get_interface(id):
+@api.route('/user/info', methods=['POST'])
+def userinfo():
     return jsonify({
         'code': 1,
         'id': '100001',
@@ -39,6 +39,8 @@ def get_interface(id):
                 'name': 'index'
             }, {
                 'name': 'table'
+            }, {
+                'name': 'project'
             }, {
                 'name': 'userPassword'
             }, {

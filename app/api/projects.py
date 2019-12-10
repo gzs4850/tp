@@ -30,7 +30,7 @@ def get_project(id):
     project = Project.query.get_or_404(id)
     return jsonify({
         'code': 1,
-        'project': project.to_json()
+        'data': project.to_json()
     })
 
 @api.route('/projects/', methods=['POST'])
@@ -44,7 +44,7 @@ def new_project():
     db.session.commit()
     return jsonify({
         'code': 1,
-        'project': project.to_json()
+        'projects': project.to_json()
     })
 
 @api.route('/projects/<int:id>', methods=['PUT'])
