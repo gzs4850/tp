@@ -6,7 +6,7 @@ from . import api
 # from httprunner.cli import single_run
 
 
-@api.route('/testcases/')
+@api.route('/testcases')
 def get_testcases():
     page = request.args.get('page', 1, type=int)
 
@@ -58,7 +58,7 @@ def get_testcase(id):
     })
 
 
-@api.route('/testcases/', methods=['POST'])
+@api.route('/testcases', methods=['POST'])
 def new_testcase():
     testcase = Testcase.from_json(request.json)
     db.session.add(testcase)

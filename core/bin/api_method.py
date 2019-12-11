@@ -42,9 +42,9 @@ def post(header, address, request_parameter_type, timeout=8, data=None, files=No
         response = requests.post(url=address, data=data, headers=header, timeout=timeout, files=files)
     try:
         if response.status_code != 200:
-            return response.status_code, response.text, response.headers, response.elapsed.total_seconds(), response.request.body, response.request.headers
+            return response.status_code, response.text, response.headers, response.elapsed.total_seconds(), response.request.body, response.request.headers, response.request.url
         else:
-            return response.status_code, response.json(), response.headers, response.elapsed.total_seconds(), response.request.body, response.request.headers
+            return response.status_code, response.json(), response.headers, response.elapsed.total_seconds(), response.request.body, response.request.headers, response.request.url
     except json.decoder.JSONDecodeError:
         return response.status_code, ''
     except simplejson.errors.JSONDecodeError:
@@ -72,7 +72,7 @@ def get(header, address, data, timeout=8):
     if response.status_code == 301:
         response = requests.get(url=response.headers["location"])
     try:
-        return response.status_code, response.json(), response.headers, response.elapsed.total_seconds(), response.request.body, response.request.headers
+        return response.status_code, response.json(), response.headers, response.elapsed.total_seconds(), response.request.body, response.request.headers, response.request.url
     except json.decoder.JSONDecodeError:
         return response.status_code, ''
     except simplejson.errors.JSONDecodeError:
@@ -98,7 +98,7 @@ def put(header, address, request_parameter_type, timeout=8, data=None, files=Non
         data = json.dumps(data)
     response = requests.put(url=address, data=data, headers=header, timeout=timeout, files=files)
     try:
-        return response.status_code, response.json(), response.headers, response.elapsed.total_seconds(), response.request.body, response.request.headers
+        return response.status_code, response.json(), response.headers, response.elapsed.total_seconds(), response.request.body, response.request.headers, response.request.url
     except json.decoder.JSONDecodeError:
         return response.status_code, ''
     except simplejson.errors.JSONDecodeError:
@@ -121,7 +121,7 @@ def delete(header, address, data, timeout=8):
     response = requests.delete(url=address, params=data, headers=header, timeout=timeout)
 
     try:
-        return response.status_code, response.json(), response.headers, response.elapsed.total_seconds(), response.request.body, response.request.headers
+        return response.status_code, response.json(), response.headers, response.elapsed.total_seconds(), response.request.body, response.request.headers, response.request.url
     except json.decoder.JSONDecodeError:
         return response.status_code, ''
     except simplejson.errors.JSONDecodeError:

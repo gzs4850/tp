@@ -4,7 +4,7 @@ from .. import db
 from ..models import Interface,Project,System
 from . import api
 
-@api.route('/interfaces/')
+@api.route('/interfaces')
 def get_interfaces():
     page = request.args.get('page', 1, type=int)
 
@@ -51,7 +51,7 @@ def get_interface(id):
         'interface': interface.to_json()
     })
 
-@api.route('/interfaces/', methods=['POST'])
+@api.route('/interfaces', methods=['POST'])
 def new_interface():
     interface = Interface.from_json(request.json)
     interface.status = 1

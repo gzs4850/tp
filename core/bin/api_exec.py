@@ -3,9 +3,11 @@
 # @Time    : 2019/11/29 16:42
 # @Author  : z.g
 
-from core.bin import config_parse, api_send, result_check, field_extract, case_parse, log
+from core.bin import config_parse, api_send, result_check, field_extract, case_parse, log, mysql_oper
 import json
+import time
 
+mc = mysql_oper.MysqlConnect()
 Logger = log.Log()
 
 def load_case(testsuit):
@@ -54,6 +56,7 @@ def exec_api(testsuit):
             # 字符串转字典 eval(str)
             case = eval(case_parse.parse_case(variable_dict, str(case)))
 
+            start_time = time.strftime("%Y-%m-%d %X",time.localtime())
             # 发送请求，返回code，response, headers
             response = api_send.send_request(case)
             # print(response)
@@ -64,9 +67,11 @@ def exec_api(testsuit):
             elapsedtime = response[3]
             req_data = response[4]
             req_header = response[5]
+            req_url = response[6]
 
             # code, result, headers, elapsedtime, req_data, req_header= api_send.send_request(case)
             # 测试结果持久化
+            Logger.info("用例 %s 请求URL： %s" % (case.get("case_name"), req_url))
             Logger.info("用例 %s 请求头： %s" % (case.get("case_name"), req_header))
             Logger.info("用例 %s 请求体： \n %s" % (case.get("case_name"), req_data))
             Logger.info("用例 %s 响应状态码： %s" % (case.get("case_name"), code))
@@ -77,12 +82,24 @@ def exec_api(testsuit):
             # print(code, result, headers, elapsedtime, req_data, req_header)
 
             # 结果集验证
-            if result_check.check(case, code, result, headers):
+            # print(result_check.check(case, code, result, headers))
+            if result_check.check(case, code, result, headers)[0]:
+                test_result = "pass"
                 Logger.info("用例 %s 测试通过" %case.get("case_name"))
                 # print("用例 %s 测试通过" %case.get("case_name"))
             else:
+                test_result = "fail"
                 Logger.error("用例 %s 测试失败" % case.get("case_name"))
                 # print("用例 %s 测试失败" % case.get("case_name"))
+
+            assert_msg = result_check.check(case, code, result, headers)[1]
+
+            if isinstance(req_data, str):
+                req_data = json.loads(req_data)
+
+            mc.exec_data('insert into testresults(case_id, test_result, real_rsp_code, real_req_path, real_req_head, real_req_json, real_rsp_head, real_rsp_json, real_rsp_time, assert_msg, timestamp) '
+                         'values(%s, "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")'
+                         %(1, test_result, code, req_url, req_header, req_data, headers, result, elapsedtime, assert_msg, start_time))
 
             # 从响应体、响应头中提取字段值
             variable_dict.update(field_extract.extract(case, result, headers))

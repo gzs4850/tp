@@ -3,12 +3,12 @@
 # @Time    : 2019/12/2 21:04
 # @Author  : z.g
 
-import pymysql
-from core.bin import get_config
+import pymysql, datetime
+from core.bin.config_parse import get_config
 
 class MysqlConnect(object):
     # 魔术方法, 初始化, 构造函数
-    def __init__(self, host, user, password, database):
+    def __init__(self):
         '''
         :param host: IP
         :param user: 用户名
@@ -29,6 +29,8 @@ class MysqlConnect(object):
     # 将要插入的数据写成元组传入
     def exec_data(self, sql, data=None):
         # 执行SQL语句
+        print("sql: %s" %sql)
+        print("data: %s" %data)
         self.cursor.execute(sql, data)
         # 提交到数据库执行
         self.db.commit()
@@ -53,8 +55,19 @@ class MysqlConnect(object):
 
 
 if __name__ == '__main__':
-    mc = MysqlConnect('127.0.0.1', 'root', '123456', 'ifsys')
+
+    mc = MysqlConnect()
+    now = datetime.datetime.now()
+    now = now.strftime("%Y-%m-%d %H:%M:%S")
+    req_header = {'User-Agent': 'python-requests/2.22.0', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'application/json', 'Content-Length': '95'}
+    req_data = {"username": "admin", "password": "e10adc3949ba59abbe56e057f20f883e", "isRememberPwd": "false"}
+    print(req_header)
+    print(req_data)
+    mc.exec_data(
+        'insert into testresults(case_id, real_req_head, real_req_json) values(%s, "%s", "%s")' % (1, req_header, req_data))
+    # mc.exec_data(
+    #     'insert into testresults(case_id, test_result, real_rsp_code, real_req_path, real_req_head, real_req_json, real_rsp_head, real_rsp_json, real_rsp_time) values(%s, %s, %s, %s, %s, %s, %s, %s, %s)' % (1, 1, '3', '4', '5', '6', '7', '8', '9'))
     # mc.exec('insert into test(id, text) values(%s, %s)' % (1, repr('哈送到附近')))
-    mc.exec_data('insert into test(id, text) values(%s, %s)' % (1, repr('哈送到附近')))
+    # mc.exec_data('insert into test(id, text) values(%s, %s)' % (1, repr('哈送到附近')))
     # mc.exec_data('insert into test(id, text) values(%s, %s)',(13, '哈送到附近'))
-    mc.select('select * from test')
+    # mc.select('select * from test')

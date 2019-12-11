@@ -4,7 +4,7 @@ from .. import db
 from ..models import Project
 from . import api
 
-@api.route('/projects/')
+@api.route('/projects')
 def get_projects():
     page = request.args.get('page', 1, type=int)
     pagination = Project.query.filter_by(status=1).paginate(
@@ -25,15 +25,31 @@ def get_projects():
         'count': pagination.total
     })
 
+# @api.route('/projects/<int:id>')
+# def get_project(id):
+#     project = Project.query.get_or_404(id)
+#     return jsonify({
+#         'code': 1,
+#         'projects': project.to_json()
+#     })
+
 @api.route('/projects/<int:id>')
 def get_project(id):
-    project = Project.query.get_or_404(id)
+    projects = Project.query.filter_by(id = id)
     return jsonify({
         'code': 1,
-        'data': project.to_json()
+        'projects': [project.to_json() for project in projects]
     })
 
-@api.route('/projects/', methods=['POST'])
+@api.route('/projectsbyname/<string:name>')
+def get_project_byname(name):
+    projects = Project.query.filter(Project.pro_name.like('%{0}%'.format(name))).all()
+    return jsonify({
+        'code': 1,
+        'projects': [project.to_json() for project in projects]
+    })
+
+@api.route('/projects', methods=['POST'])
 def new_project():
     project = Project.from_json(request.json)
     project.status = 1

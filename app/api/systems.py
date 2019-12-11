@@ -4,7 +4,7 @@ from .. import db
 from ..models import System,Project
 from . import api
 
-@api.route('/systems/')
+@api.route('/systems')
 def get_systems():
     page = request.args.get('page', 1, type=int)
 
@@ -43,7 +43,7 @@ def get_system(id):
         'system': system.to_json()
     })
 
-@api.route('/systems/', methods=['POST'])
+@api.route('/systems', methods=['POST'])
 def new_system():
     system = System.from_json(request.json)
     system.status = 1
