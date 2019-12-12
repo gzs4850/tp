@@ -43,6 +43,14 @@ def get_system(id):
         'system': system.to_json()
     })
 
+@api.route('/systemsbyname/<string:name>')
+def get_system_byname(name):
+    systems = System.query.filter(System.sys_name.like('%{0}%'.format(name))).all()
+    return jsonify({
+        'code': 1,
+        'systems': [system.to_json() for system in systems]
+    })
+
 @api.route('/systems', methods=['POST'])
 def new_system():
     system = System.from_json(request.json)

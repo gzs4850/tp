@@ -42,6 +42,8 @@ def userinfo():
             }, {
                 'name': 'project'
             }, {
+                'name': 'system'
+            }, {
                 'name': 'userPassword'
             }, {
                 'name': 'level4'
