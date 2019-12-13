@@ -101,9 +101,9 @@ class Interface(db.Model):
     def from_json(json_interface):
         if_name = json_interface.get('if_name')
         if_desc = json_interface.get('if_desc')
-        protocol = json_interface.get('protocol')
-        method = json_interface.get('method')
-        url = json_interface.get('url')
+        protocol = json_interface.get('if_protocol')
+        method = json_interface.get('if_method')
+        url = json_interface.get('if_url')
         autotest = json_interface.get('autotest')
         system_id = json_interface.get('system_id')
         project_id = json_interface.get('project_id')
