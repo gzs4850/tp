@@ -1,5 +1,7 @@
 # coding:utf-8
 from flask import jsonify, request, url_for, current_app
+from sqlalchemy import and_
+
 from .. import db
 from ..models import Interface,Project,System
 from . import api
@@ -36,8 +38,49 @@ def get_interfaces():
         next = url_for('api.get_interfaces', page=page+1)
     return jsonify({
         'code': 1,
-        'interfaces': [{'id':interface.id,'if_name':interface.if_name,'if_desc':interface.if_desc,'status':interface.status,'protocol':interface.protocol,'method':interface.method,
-                        'url':interface.url,'autotest':interface.autotest,'project_id':interface.project_id,'system_id':interface.system_id,'pro_name':interface.pro_name,'sys_name':interface.sys_name} for interface in interfaces],
+        'interfaces': [{'id':interface.id,'if_name':interface.if_name,'if_desc':interface.if_desc,'status':interface.status,'if_protocol':interface.protocol,'if_method':interface.method,
+                        'if_url':interface.url,'autotest':interface.autotest,'project_id':interface.project_id,'system_id':interface.system_id,'pro_name':interface.pro_name,'sys_name':interface.sys_name} for interface in interfaces],
+        'prev': prev,
+        'next': next,
+        'count': pagination.total
+    })
+
+@api.route('/interfacesbysearch')
+def search_interface():
+    page = request.args.get('page', 1, type=int)
+    id = request.args.get("id")
+    name = request.args.get("if_name")
+    system_id = request.args.get("sys_id")
+    project_id = request.args.get("project_id")
+    condition = (Interface.status == 1)
+    if id:
+        condition = and_(condition, Interface.id == id)
+    if name:
+        condition = and_(condition, Interface.if_name.like('%{0}%'.format(name)))
+    if system_id:
+        condition = and_(condition, Interface.system_id == system_id)
+    if project_id:
+        condition = and_(condition, Interface.project_id == project_id)
+
+    pagination = db.session.query(Interface.id, Interface.if_name, Interface.if_desc, Interface.status, Interface.protocol,Interface.method,
+                                      Interface.url, Interface.autotest, Interface.project_id, Interface.system_id,Project.pro_name,
+                                      System.sys_name).filter(condition).join(Project,Interface.project_id == Project.id).join(System,Interface.system_id == System.id).\
+                                        paginate(page, per_page=current_app.config['FLASKY_PER_PAGE'],error_out=False)
+    interfaces = pagination.items
+    prev = None
+    if pagination.has_prev:
+        prev = url_for('api.get_interfaces', page=page - 1)
+    next = None
+    if pagination.has_next:
+        next = url_for('api.get_interfaces', page=page + 1)
+    return jsonify({
+        'code': 1,
+        'interfaces': [
+            {'id': interface.id, 'if_name': interface.if_name, 'if_desc': interface.if_desc, 'status': interface.status,
+             'if_protocol': interface.protocol, 'if_method': interface.method,
+             'if_url': interface.url, 'autotest': interface.autotest, 'project_id': interface.project_id,
+             'system_id': interface.system_id, 'pro_name': interface.pro_name, 'sys_name': interface.sys_name} for
+            interface in interfaces],
         'prev': prev,
         'next': next,
         'count': pagination.total

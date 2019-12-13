@@ -40,6 +40,8 @@ def userinfo():
             }, {
                 'name': 'table'
             }, {
+                'name': 'interface'
+            }, {
                 'name': 'project'
             }, {
                 'name': 'system'
