@@ -41,6 +41,8 @@ def userinfo():
                 'name': 'table'
             }, {
                 'name': 'interface'
+            },{
+                'name': 'ifcase'
             }, {
                 'name': 'project'
             }, {

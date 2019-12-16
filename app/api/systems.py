@@ -82,7 +82,7 @@ def search_system():
 def new_system():
     system = System.from_json(request.json)
     system.status = 1
-    exist_system = System.query.filter_by(sys_name=system.sys_name).first()
+    exist_system = System.query.filter_by(sys_name=system.sys_name,project_id=system.project_id).first()
     if exist_system:
         return jsonify({'code':0, 'message': '该系统名称已存在'})
     db.session.add(system)

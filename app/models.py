@@ -191,10 +191,10 @@ class Testcase(db.Model):
     @staticmethod
     def from_json(json_testcase):
         case_name = json_testcase.get('case_name')
-        interface_id = json_testcase.get('interface_id')
+        interface_id = json_testcase.get('if_id')
         request_json = json.dumps(json_testcase.get('request_json'))
         request_head = json.dumps(json_testcase.get('request_head'))
-        url = json_testcase.get('url')
+        if_url = json_testcase.get('if_url')
         response_json = json.dumps(json_testcase.get('response_json'))
         response_head = json.dumps(json_testcase.get('response_head'))
         check_json = json.dumps(json_testcase.get('check_json'))
@@ -202,7 +202,7 @@ class Testcase(db.Model):
         if case_name is None or case_name == '':
             raise ValidationError('case_name is null')
         return Testcase(case_name=case_name, interface_id=interface_id, request_json=request_json, request_head=request_head,
-                   url=url, response_json=response_json, response_head=response_head,
+                   url=if_url, response_json=response_json, response_head=response_head,
                    check_json=check_json, ref_json=ref_json)
 
 class Caseextract(db.Model):
