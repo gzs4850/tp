@@ -103,15 +103,23 @@ def get_testcaselist():
     })
 
 
+# @api.route('/testcases/<int:id>')
+# def get_testcase(id):
+#     testcase = Testcase.query.get_or_404(id)
+#     for key in testcase.to_json().keys():
+#         print('%s:%s' % (key, testcase.to_json().get(key)))
+#
+#     return jsonify({
+#         'code': 1,
+#         'testcase': testcase.to_json()
+#     })
+
 @api.route('/testcases/<int:id>')
 def get_testcase(id):
-    testcase = Testcase.query.get_or_404(id)
-    for key in testcase.to_json().keys():
-        print('%s:%s' % (key, testcase.to_json().get(key)))
-
+    testcases = Testcase.query.filter_by(id = id)
     return jsonify({
         'code': 1,
-        'testcase': testcase.to_json()
+        'testcases': [testcase.to_json() for testcase in testcases]
     })
 
 
@@ -212,18 +220,24 @@ def get_referCase(id):
     })
 
 
-@api.route('/testcases/refercase/', methods=['POST'])
-def new_referCase():
+@api.route('/testcases/refercase/<int:id>', methods=['PUT'])
+def new_referCase(id):
     ordernum = 1
-    caserefer = Caserefer.query.filter_by(mockid=request.json.get('mockid')).order_by(
-        db.desc(Caserefer.ordernum)).first()
-    # if caserefer:
-    #     ordernum = int(caserefer.ordernum)+1
-    #     print(ordernum)
-    request.json['ordernum'] = ordernum
-    caserefer = Caserefer.from_json(request.json)
-    db.session.add(caserefer)
-    db.session.commit()
+    # print('----request.json----------%s' % request.json)
+    for req in request.json:
+        reqlist = {}
+        # print('-----req---------%s' %req)
+        caserefer = Caserefer.query.filter_by(mockid=id).order_by(
+            db.desc(Caserefer.ordernum)).first()
+        if caserefer:
+            ordernum = int(caserefer.ordernum)+1
+            # print(ordernum)
+        reqlist['ordernum'] = ordernum
+        reqlist['mockid'] = id
+        reqlist['refer_mockid'] = req['id']
+        caserefer = Caserefer.from_json(reqlist)
+        db.session.add(caserefer)
+        db.session.commit()
     return jsonify({
         'code': 1,
         'caserefer': caserefer.to_json()
