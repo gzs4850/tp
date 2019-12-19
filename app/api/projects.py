@@ -66,6 +66,7 @@ def new_project():
 @api.route('/projects/<int:id>', methods=['PUT'])
 def edit_project(id):
     project = Project.query.get_or_404(id)
+    print("json: %s" % request.json)
     project.pro_name = request.json.get('pro_name', project.pro_name)
     project.pro_desc = request.json.get('pro_desc', project.pro_desc)
     db.session.add(project)

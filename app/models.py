@@ -156,6 +156,7 @@ class Testcase(db.Model):
     __tablename__ = 'testcases'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     case_name = db.Column(db.String(64))
+    method = db.Column(db.String(64))
     interface_id = db.Column(db.Integer, db.ForeignKey('interfaces.id'))
     request_json = db.Column(db.Text)
     request_head = db.Column(db.Text)
@@ -163,7 +164,8 @@ class Testcase(db.Model):
     response_json = db.Column(db.Text)
     response_head = db.Column(db.Text)
     check_json = db.Column(db.Text)
-    ref_json = db.Column(db.Text)
+    extract_json = db.Column(db.Text)
+    var_json = db.Column(db.Text)
     is_case = db.Column(db.Boolean, default=1)
     status = db.Column(db.Boolean, default=1)
     timestamp = db.Column(db.DateTime, default=datetime.now)
@@ -174,6 +176,7 @@ class Testcase(db.Model):
         json_testcase = {
             'id': self.id,
             'case_name': self.case_name,
+            'method': self.method,
             'interface_id': self.interface_id,
             'request_json': json.loads(self.request_json),
             'request_head': json.loads(self.request_head),
@@ -181,7 +184,8 @@ class Testcase(db.Model):
             'response_json': json.loads(self.response_json),
             'response_head': json.loads(self.response_head),
             'check_json': json.loads(self.check_json),
-            'ref_json': json.loads(self.ref_json),
+            'extract_json': json.loads(self.extract_json),
+            'var_json': json.loads(self.var_json),
             'is_case': self.is_case,
             'status': self.status,
             'timestamp': self.timestamp
@@ -191,19 +195,21 @@ class Testcase(db.Model):
     @staticmethod
     def from_json(json_testcase):
         case_name = json_testcase.get('case_name')
-        interface_id = json_testcase.get('if_id')
+        interface_id = json_testcase.get('interface_id')
         request_json = json.dumps(json_testcase.get('request_json'))
         request_head = json.dumps(json_testcase.get('request_head'))
+        method = json_testcase.get('method')
         if_url = json_testcase.get('if_url')
         response_json = json.dumps(json_testcase.get('response_json'))
         response_head = json.dumps(json_testcase.get('response_head'))
         check_json = json.dumps(json_testcase.get('check_json'))
-        ref_json = json.dumps(json_testcase.get('ref_json'))
+        extract_json = json.dumps(json_testcase.get('extract_json'))
+        var_json = json.dumps(json_testcase.get('var_json'))
         if case_name is None or case_name == '':
             raise ValidationError('case_name is null')
-        return Testcase(case_name=case_name, interface_id=interface_id, request_json=request_json, request_head=request_head,
+        return Testcase(case_name=case_name, method=method, interface_id=interface_id, request_json=request_json, request_head=request_head,
                    url=if_url, response_json=response_json, response_head=response_head,
-                   check_json=check_json, ref_json=ref_json)
+                   check_json=check_json, extract_json=extract_json, var_json=var_json)
 
 class Caseextract(db.Model):
     __tablename__ = 'caseextracts'

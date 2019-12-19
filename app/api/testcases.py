@@ -1,10 +1,13 @@
 # coding:utf-8
+import json
+
 from flask import jsonify, request, g, url_for, current_app
 from sqlalchemy import and_
 
 from .. import db
 from ..models import Testcase, Caserefer, Interface, System, Project, Caseextract, Assertrule
 from . import api
+from core.bin.api_exec import exec_api
 
 
 # from httprunner.cli import single_run
@@ -14,8 +17,8 @@ from . import api
 def get_testcases():
     page = request.args.get('page', 1, type=int)
 
-    pagination = db.session.query(Testcase.id, Testcase.case_name, Testcase.url, Testcase.request_head,
-                                  Testcase.request_json, Testcase.check_json, Testcase.ref_json, Testcase.status,
+    pagination = db.session.query(Testcase.id, Testcase.case_name, Testcase.method, Testcase.url, Testcase.request_head,
+                                  Testcase.request_json, Testcase.check_json, Testcase.extract_json, Testcase.var_json, Testcase.status,
                                   Interface.if_name, System.sys_name, Project.pro_name, Testcase.interface_id,
                                   Interface.system_id, Interface.project_id, Interface.method,
                                   Interface.protocol).filter_by(status=1).join(
@@ -36,13 +39,13 @@ def get_testcases():
         next = url_for('api.get_projects', page=page + 1)
     return jsonify({
         'code': 1,
-        'testcases': [{'id': testcase.id, 'case_name': testcase.case_name, 'url': testcase.url,
+        'testcases': [{'id': testcase.id, 'case_name': testcase.case_name, 'method':testcase.method, 'url': testcase.url,
                        'request_head': testcase.request_head, 'request_json': testcase.request_json,
-                       'check_json': testcase.check_json,
-                       'ref_json': testcase.ref_json, 'status': testcase.status, 'if_name': testcase.if_name,
+                       'check_json': testcase.check_json, 'var_json': testcase.var_json,
+                       'extract_json': testcase.extract_json, 'status': testcase.status, 'if_name': testcase.if_name,
                        'sys_name': testcase.sys_name, 'pro_name': testcase.pro_name,
                        'interface_id': testcase.interface_id, 'system_id': testcase.system_id,
-                       'project_id': testcase.project_id, 'method': testcase.method, 'protocol': testcase.protocol} for
+                       'project_id': testcase.project_id, 'protocol': testcase.protocol} for
                       testcase in testcases],
         'prev': prev,
         'next': next,
@@ -68,10 +71,10 @@ def get_testcaselist():
     if project_id:
         condition = and_(condition, Interface.project_id == project_id)
 
-    pagination = db.session.query(Testcase.id, Testcase.case_name, Testcase.url, Testcase.request_head,
-                                  Testcase.request_json, Testcase.check_json, Testcase.ref_json, Testcase.status,
+    pagination = db.session.query(Testcase.id, Testcase.case_name, Testcase.url, Testcase.method, Testcase.request_head,
+                                  Testcase.request_json, Testcase.check_json, Testcase.extract_json, Testcase.var_json, Testcase.status,
                                   Interface.if_name, System.sys_name, Project.pro_name, Testcase.interface_id,
-                                  Interface.system_id, Interface.project_id, Interface.method,
+                                  Interface.system_id, Interface.project_id,
                                   Interface.protocol).filter(condition).join(Interface,
                                                                              Testcase.interface_id == Interface.id).join(
         Project, Interface.project_id == Project.id).join(System, Interface.system_id == System.id).paginate(page,
@@ -91,8 +94,8 @@ def get_testcaselist():
         'code': 1,
         'testcases': [{'id': testcase.id, 'case_name': testcase.case_name, 'url': testcase.url,
                        'request_head': testcase.request_head, 'request_json': testcase.request_json,
-                       'check_json': testcase.check_json,
-                       'ref_json': testcase.ref_json, 'status': testcase.status, 'if_name': testcase.if_name,
+                       'check_json': testcase.check_json, 'var_json':testcase.var_json,
+                       'extract_json': testcase.extract_json, 'status': testcase.status, 'if_name': testcase.if_name,
                        'sys_name': testcase.sys_name, 'pro_name': testcase.pro_name,
                        'interface_id': testcase.interface_id, 'system_id': testcase.system_id,
                        'project_id': testcase.project_id, 'method': testcase.method, 'protocol': testcase.protocol} for
@@ -138,14 +141,16 @@ def new_testcase():
 def edit_testcase(id):
     testcase = Testcase.query.get_or_404(id)
     testcase.case_name = request.json.get('case_name', testcase.case_name)
+    testcase.method = request.json.get('method', testcase.method)
     testcase.interface_id = request.json.get('interface_id', testcase.interface_id)
-    testcase.request_json = request.json.get('request_json', testcase.request_json)
-    testcase.request_head = request.json.get('request_head', testcase.request_head)
+    testcase.request_json = json.dumps(request.json.get('request_json', testcase.request_json))
+    testcase.request_head = json.dumps(request.json.get('request_head', testcase.request_head))
     testcase.url = request.json.get('if_url', testcase.url)
-    testcase.response_json = request.json.get('response_json', testcase.response_json)
-    testcase.response_head = request.json.get('response_head', testcase.response_head)
-    testcase.check_json = request.json.get('check_json', testcase.check_json)
-    testcase.ref_json = request.json.get('ref_json', testcase.ref_json)
+    testcase.response_json = json.dumps(request.json.get('response_json', testcase.response_json))
+    testcase.response_head = json.dumps(request.json.get('response_head', testcase.response_head))
+    testcase.check_json = json.dumps(request.json.get('check_json', testcase.check_json))
+    testcase.extract_json = json.dumps(request.json.get('extract_json', testcase.extract_json))
+    testcase.var_json = json.dumps(request.json.get('var_json', testcase.var_json))
     db.session.add(testcase)
     db.session.commit()
     return jsonify({
@@ -153,6 +158,42 @@ def edit_testcase(id):
         'testcase': testcase.to_json()
     })
 
+@api.route('/testcases/run/<int:id>', methods=['POST'])
+def run_single_testcase(id):
+    caserefers = Caserefer.query.filter_by(mockid=id).order_by(Caserefer.ordernum).all()
+    print("referCase: %s" %caserefers)
+
+    testcase = Testcase.query.get_or_404(id)
+    print(testcase)
+    testsuit = []
+    cases = []
+    dict_case = {}
+    case = {}
+    case['request'] = {}
+    case['name'] = testcase.to_json().get('case_name')
+    case['request']['variable'] = testcase.to_json().get('var_json')
+    case['request']['url'] = testcase.to_json().get('url')
+    case['request']['method'] = testcase.to_json().get('method')
+    case['request']['headers'] = testcase.to_json().get('request_head')
+    case['request']['json'] = testcase.to_json().get('request_json')
+    case['request']['extract'] = testcase.to_json().get('extract_json')
+    case['request']['validate'] = testcase.to_json().get('check_json')
+    case['request']['setup_hooks'] = []
+    case['request']['teardown_hooks'] = []
+
+    print("case: %s" %case)
+    dict_case["case"] = case
+    cases.append(dict_case)
+    print("cases: %s" % cases)
+    testsuit.append(cases)
+    testsuit = json.dumps(testsuit)
+    print("testsuit: %s" % testsuit)
+
+    exec_api(testsuit=str(testsuit))
+    return jsonify({
+        'code': 1,
+        'message': '执行成功'
+    })
 
 @api.route('/testcases/<int:id>', methods=['DELETE'])
 def delete_testcase(id):
