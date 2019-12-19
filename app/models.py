@@ -292,6 +292,7 @@ class Testresult(db.Model):
     real_rsp_time = db.Column(db.String(20))
     assert_msg = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, default=datetime.now)
+    batch_number = db.Column(db.String(10))
 
     def to_json(self):
         json_testresult = {
@@ -306,6 +307,7 @@ class Testresult(db.Model):
             'real_rsp_json': json.loads(self.real_rsp_json),
             'real_rsp_time': self.real_rsp_time,
             'assert_msg': self.assert_msg,
-            'timestamp': self.timestamp
+            'timestamp': self.timestamp,
+            'batch_number': self.batch_number
         }
         return json_testresult
