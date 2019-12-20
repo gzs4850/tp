@@ -161,29 +161,21 @@ def edit_testcase(id):
 @api.route('/testcases/run/<int:id>', methods=['POST'])
 def run_single_testcase(id):
     caserefers = Caserefer.query.filter_by(mockid=id).order_by(Caserefer.ordernum).all()
-    print("referCase: %s" %caserefers)
-
-    testcase = Testcase.query.get_or_404(id)
-    print(testcase)
+    # print("referCase: %s" %caserefers)
     testsuit = []
     cases = []
-    dict_case = {}
-    case = {}
-    case['request'] = {}
-    case['name'] = testcase.to_json().get('case_name')
-    case['request']['variable'] = testcase.to_json().get('var_json')
-    case['request']['url'] = testcase.to_json().get('url')
-    case['request']['method'] = testcase.to_json().get('method')
-    case['request']['headers'] = testcase.to_json().get('request_head')
-    case['request']['json'] = testcase.to_json().get('request_json')
-    case['request']['extract'] = testcase.to_json().get('extract_json')
-    case['request']['validate'] = testcase.to_json().get('check_json')
-    case['request']['setup_hooks'] = []
-    case['request']['teardown_hooks'] = []
+    if len(caserefers) > 0:
+        for caserefer in caserefers:
+            print("mockid: %s" %caserefer.refer_mockid)
+            dict_case = {}
 
-    print("case: %s" %case)
-    dict_case["case"] = case
+            dict_case["case"] = package_case(caserefer.refer_mockid)
+            cases.append(dict_case)
+
+    dict_case = {}
+    dict_case["case"] = package_case(id)
     cases.append(dict_case)
+
     print("cases: %s" % cases)
     testsuit.append(cases)
     testsuit = json.dumps(testsuit)
@@ -194,6 +186,23 @@ def run_single_testcase(id):
         'code': 1,
         'message': '执行成功'
     })
+
+
+def package_case(case_id):
+    case = {}
+    case['request'] = {}
+    testcase = Testcase.query.get_or_404(case_id)
+    case['name'] = testcase.to_json().get('case_name')
+    case['request']['variable'] = testcase.to_json().get('var_json')
+    case['request']['url'] = testcase.to_json().get('url')
+    case['request']['method'] = testcase.to_json().get('method')
+    case['request']['headers'] = testcase.to_json().get('request_head')
+    case['request']['json'] = testcase.to_json().get('request_json')
+    case['request']['extract'] = testcase.to_json().get('extract_json')
+    case['request']['validate'] = testcase.to_json().get('check_json')
+    case['request']['setup_hooks'] = []
+    case['request']['teardown_hooks'] = []
+    return case
 
 @api.route('/testcases/<int:id>', methods=['DELETE'])
 def delete_testcase(id):

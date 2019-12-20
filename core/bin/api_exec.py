@@ -20,7 +20,7 @@ def load_case(testsuit):
     for case in testsuit:
         step_list = []
         for step in case:
-            print("step: %s" %step)
+            # print("step: %s" %step)
             case_dict = {}
             case_dict["host"] = host
             case_dict["http_type"] = http_type

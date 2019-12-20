@@ -13,7 +13,7 @@ def login():
         'token': 'fdsjfhjkdshfkldsajfjasdfbjsdkfhsdajfj',
         'result': {
             'id': '100001',
-            'name': '林锦泽',
+            'name': '小三三',
             'roles': ['admin']
         }
     })
@@ -31,14 +31,12 @@ def userinfo():
     return jsonify({
         'code': 1,
         'id': '100001',
-        'name': '林锦泽',
+        'name': '小三三',
         'roles': ['admin'],
         'permissions': [
             {
                 # // 一个页面一个对象，以name确定（对应静态路由表里面的name）
                 'name': 'index'
-            }, {
-                'name': 'table'
             }, {
                 'name': 'interface'
             },{
@@ -47,9 +45,12 @@ def userinfo():
                 'name': 'project'
             }, {
                 'name': 'system'
+            },  {
+                'name': 'env'
             }, {
                 'name': 'userPassword'
-            }, {
+            }
+            , {
                 'name': 'level4'
             }, {
                 'name': 'level4Detail',
