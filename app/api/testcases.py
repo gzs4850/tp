@@ -158,15 +158,35 @@ def edit_testcase(id):
         'testcase': testcase.to_json()
     })
 
+# 批量执行所有case
+@api.route('/testcases/run', methods=['POST'])
+def run_all_testcase():
+    cases = Testcase.query.filter(Testcase.is_case == 1).all()
+    for case in cases:
+        run(case.id)
+    return jsonify({
+        'code': 1,
+        'message': '执行成功'
+    })
+
+# 单独执行一个case
 @api.route('/testcases/run/<int:id>', methods=['POST'])
 def run_single_testcase(id):
+    run(id)
+    return jsonify({
+        'code': 1,
+        'message': '执行成功'
+    })
+
+# 执行
+def run(id):
     caserefers = Caserefer.query.filter_by(mockid=id).order_by(Caserefer.ordernum).all()
     # print("referCase: %s" %caserefers)
     testsuit = []
     cases = []
     if len(caserefers) > 0:
         for caserefer in caserefers:
-            print("mockid: %s" %caserefer.refer_mockid)
+            print("mockid: %s" % caserefer.refer_mockid)
             dict_case = {}
 
             dict_case["case"] = package_case(caserefer.refer_mockid)
@@ -180,14 +200,9 @@ def run_single_testcase(id):
     testsuit.append(cases)
     testsuit = json.dumps(testsuit)
     print("testsuit: %s" % testsuit)
-
     exec_api(testsuit=str(testsuit))
-    return jsonify({
-        'code': 1,
-        'message': '执行成功'
-    })
 
-
+# 封装case
 def package_case(case_id):
     case = {}
     case['request'] = {}
