@@ -1,4 +1,6 @@
 # coding:utf-8
+from datetime import datetime
+
 from flask import jsonify, request, url_for, current_app
 from ..models import Testresult, Testcase, Interface, System, Project
 from . import api
@@ -72,7 +74,7 @@ def get_testresults():
                        'real_rsp_code': testresult.real_rsp_code, 'real_req_path': testresult.real_req_path,
                        'real_req_head': testresult.real_req_head, 'real_req_json': testresult.real_req_json,
                        'real_rsp_head': testresult.real_rsp_head, 'real_rsp_json': testresult.real_rsp_json, 'real_rsp_time': testresult.real_rsp_time,
-                       'timestamp': testresult.timestamp, 'assert_msg': testresult.assert_msg, 'batch_number': testresult.batch_number,
+                       'timestamp': datetime.strftime(testresult.timestamp, "%Y-%m-%d %H:%M:%S"), 'assert_msg': testresult.assert_msg, 'batch_number': testresult.batch_number,
                         'if_name': testresult.if_name, 'sys_name': testresult.sys_name, 'pro_name': testresult.pro_name,
                        'interface_id': testresult.interface_id, 'system_id': testresult.system_id,
                        'project_id': testresult.project_id} for

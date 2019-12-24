@@ -295,6 +295,8 @@ class Testresult(db.Model):
     batch_number = db.Column(db.String(10))
 
     def to_json(self):
+        timestamp = datetime.strftime(self.timestamp, "%Y-%m-%d %H:%M:%S")
+        print("timestamp-----------:%s" %timestamp)
         json_testresult = {
             'id': self.id,
             'case_id': self.case_id,
@@ -307,7 +309,41 @@ class Testresult(db.Model):
             'real_rsp_json': json.dumps(self.real_rsp_json),
             'real_rsp_time': self.real_rsp_time,
             'assert_msg': self.assert_msg,
-            'timestamp': self.timestamp,
+            'timestamp': timestamp,
             'batch_number': self.batch_number
         }
         return json_testresult
+
+
+class Baseurl(db.Model):
+    __tablename__ = 'baseurls'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    url_name = db.Column(db.String(64))
+    qa_url = db.Column(db.String(64))
+    pro_url = db.Column(db.String(64))
+    system_id = db.Column(db.Integer, db.ForeignKey('systems.id'))
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'))
+    timestamp = db.Column(db.DateTime, default=datetime.now)
+
+    def to_json(self):
+        json_baseurl = {
+            'id': self.id,
+            'url_name': self.url_name,
+            'qa_url': self.qa_url,
+            'pro_url': self.pro_url,
+            'system_id': self.system_id,
+            'project_id': self.project_id,
+            'timestamp': self.timestamp
+        }
+        return json_baseurl
+
+    @staticmethod
+    def from_json(json_baseurl):
+        url_name = json_baseurl.get('url_name')
+        qa_url = json_baseurl.get('qa_url')
+        pro_url = json_baseurl.get('pro_url')
+        system_id = json_baseurl.get('system_id')
+        project_id = json_baseurl.get('project_id')
+        if url_name is None or url_name == '':
+            raise ValidationError('url_name is null')
+        return Baseurl(url_name=url_name, qa_url=qa_url, pro_url=pro_url, system_id=system_id, project_id=project_id)

@@ -14,8 +14,8 @@ def check_data(key, exp_dict, data, assert_msg):
         if i == 1:
             temp[key] = data.get(locator[i])
             if temp[key] == None:
-                Logger.error("从 %s 中提取字段 %s 失败" % (data, key))
-                msg = "从 %s 中提取字段 %s 失败" % (data, key)
+                Logger.error("从响应中提取字段 %s 失败" % (key))
+                msg = "从响应中提取字段 %s 失败" % (key)
                 assert_msg.append(msg)
                 break
             # print("temp[key]:%s" % temp[key])
@@ -52,11 +52,13 @@ def check(case, code, content, headers):
     if isinstance(content, str):
         content = eval(content)
 
+    print("------exp_dict:---- %s" %exp_dict)
+
     if exp_dict != None:
         for key in exp_dict.keys():
-            with allure.step("校验HTTP响应状态"):
-                allure.attach("期望结果", str(exp_dict["status_code"]))
-                allure.attach("实际结果", str(code))
+            # with allure.step("校验HTTP响应状态"):
+            #     allure.attach("期望结果", str(exp_dict["status_code"]))
+            #     allure.attach("实际结果", str(code))
             if key == "status_code":
                 if exp_dict["status_code"] == code:
                     msg = "断言成功：%s 期望结果 %s, 实际结果 %s" % (key, exp_dict["status_code"], code)

@@ -5,7 +5,7 @@ from flask import jsonify, request, g, url_for, current_app
 from sqlalchemy import and_
 
 from .. import db
-from ..models import Testcase, Caserefer, Interface, System, Project, Caseextract, Assertrule
+from ..models import Testcase, Caserefer, Interface, System, Project, Caseextract, Assertrule, Baseurl
 from . import api
 from core.bin.api_exec import exec_api
 
@@ -106,17 +106,6 @@ def get_testcaselist():
     })
 
 
-# @api.route('/testcases/<int:id>')
-# def get_testcase(id):
-#     testcase = Testcase.query.get_or_404(id)
-#     for key in testcase.to_json().keys():
-#         print('%s:%s' % (key, testcase.to_json().get(key)))
-#
-#     return jsonify({
-#         'code': 1,
-#         'testcase': testcase.to_json()
-#     })
-
 @api.route('/testcases/<int:id>')
 def get_testcase(id):
     testcases = Testcase.query.filter_by(id = id)
@@ -172,14 +161,15 @@ def run_all_testcase():
 # 单独执行一个case
 @api.route('/testcases/run/<int:id>', methods=['POST'])
 def run_single_testcase(id):
-    run(id)
+    env = request.args.get("env")
+    run(id, env)
     return jsonify({
         'code': 1,
         'message': '执行成功'
     })
 
 # 执行
-def run(id):
+def run(id, env):
     caserefers = Caserefer.query.filter_by(mockid=id).order_by(Caserefer.ordernum).all()
     # print("referCase: %s" %caserefers)
     testsuit = []
@@ -189,11 +179,11 @@ def run(id):
             print("mockid: %s" % caserefer.refer_mockid)
             dict_case = {}
 
-            dict_case["case"] = package_case(caserefer.refer_mockid)
+            dict_case["case"] = package_case(caserefer.refer_mockid, env)
             cases.append(dict_case)
 
     dict_case = {}
-    dict_case["case"] = package_case(id)
+    dict_case["case"] = package_case(id, env)
     cases.append(dict_case)
 
     print("cases: %s" % cases)
@@ -203,11 +193,13 @@ def run(id):
     exec_api(testsuit=str(testsuit))
 
 # 封装case
-def package_case(case_id):
+def package_case(case_id, env):
     case = {}
     case['request'] = {}
     testcase = Testcase.query.get_or_404(case_id)
     case['name'] = testcase.to_json().get('case_name')
+    case['id'] = testcase.to_json().get('id')
+    case['baseurl'] =getBaseurl(testcase.to_json().get('interface_id'), env)
     case['request']['variable'] = testcase.to_json().get('var_json')
     case['request']['url'] = testcase.to_json().get('url')
     case['request']['method'] = testcase.to_json().get('method')
@@ -226,6 +218,15 @@ def delete_testcase(id):
     db.session.add(testcase)
     db.session.commit()
     return jsonify({'code': 1, 'message': '删除成功'})
+
+def getBaseurl(interface_id, env):
+    print("---------interface_id-----------:%s" % interface_id)
+    baseurl = db.session.query(Baseurl).join(System, System.id == Baseurl.system_id).join(Interface, System.id == Interface.system_id).join(Testcase, Interface.id == Testcase.interface_id).filter(Testcase.interface_id == interface_id).first()
+    print("---------baseurl-----------:%s" %baseurl.qa_url)
+    if env == "uat":
+        return baseurl.qa_url
+    else:
+        return baseurl.pro_url
 
 
 @api.route('/runtestcase/<int:id>', methods=['POST'])

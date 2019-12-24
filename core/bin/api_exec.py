@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2019/11/29 16:42
 # @Author  : z.g
+from pymysql import escape_string
 
 from core.bin import config_parse, api_send, result_check, field_extract, case_parse, log, mysql_oper
 import json
@@ -12,8 +13,8 @@ Logger = log.Log()
 
 def load_case(testsuit):
     # print("testsuit: %s" % testsuit)
-    host = config_parse.get_config("ENV", "host")
-    http_type = config_parse.get_config("ENV", "http_type")
+    # host = config_parse.get_config("ENV", "host")
+    # http_type = config_parse.get_config("ENV", "http_type")
     timeout = config_parse.get_config("ENV", "timeout")
     testsuit = json.loads(testsuit)
     case_list = []
@@ -22,10 +23,12 @@ def load_case(testsuit):
         for step in case:
             # print("step: %s" %step)
             case_dict = {}
-            case_dict["host"] = host
-            case_dict["http_type"] = http_type
             case_dict["timeout"] = int(timeout)
             step_detail = step.get("case")
+            baseurl = step_detail.get("baseurl")
+            case_dict["http_type"] = baseurl.split('://', 1)[0]
+            case_dict["host"] = baseurl.split('://', 1)[1]
+            case_dict["case_id"] = step_detail.get("id")
             case_dict["case_name"] = step_detail.get("name")
             step_request = step_detail.get("request")
             case_dict["case_variable"] = step_request.get("variable")
@@ -50,7 +53,9 @@ def exec_api(testsuit):
     # variable_dict = {}
     for step in case_list:
         for case in step:
-            # print("case:%s" % case)
+            print("---------case:%s" % case)
+            case_id = case.get("case_id")
+            print("case_id:%s" % case_id)
             variable_dict = case.get("case_variable")
 
             # 字典转字符串str(dict)
@@ -98,9 +103,18 @@ def exec_api(testsuit):
             if isinstance(req_data, str):
                 req_data = json.loads(req_data)
 
+            print(type(result))
+            if isinstance(result, str):
+                result = json.loads(result)
+            #
+            # if len(assert_msg) > 0:
+            #     msgInfo = []
+            #     for msg in assert_msg:
+            #         msgInfo.append(escape_string(msg))
+
             mc.exec_data('insert into testresults(case_id, test_result, real_rsp_code, real_req_path, real_req_head, real_req_json, real_rsp_head, real_rsp_json, real_rsp_time, assert_msg, timestamp) '
                          'values(%s, "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")'
-                         %(1, test_result, code, req_url, req_header, req_data, headers, result, elapsedtime, assert_msg, start_time))
+                         %(case_id, test_result, code, req_url, req_header, req_data, headers, result, elapsedtime, assert_msg, start_time))
 
             # 从响应体、响应头中提取字段值
             variable_dict.update(field_extract.extract(case, result, headers))
