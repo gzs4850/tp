@@ -118,7 +118,7 @@ def exec_api(testsuit):
 
             # 从响应体、响应头中提取字段值
             variable_dict.update(field_extract.extract(case, result, headers))
-            # print(variable_dict)
+            print('variable_dict: %s' %variable_dict)
 
         # return code, result, headers
 

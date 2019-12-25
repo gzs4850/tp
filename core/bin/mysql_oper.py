@@ -28,6 +28,7 @@ class MysqlConnect(object):
 
     # 将要插入的数据写成元组传入
     def exec_data(self, sql, data=None):
+        self.db.ping(reconnect=True)
         # 执行SQL语句
         print("sql: %s" %sql)
         print("data: %s" %data)
