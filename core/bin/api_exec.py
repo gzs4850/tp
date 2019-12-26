@@ -49,14 +49,15 @@ def load_case(testsuit):
 
 def exec_api(testsuit):
     case_list = load_case(testsuit)
-    # print("case_list:%s" % case_list)
-    # variable_dict = {}
+    print("case_list:%s" % case_list)
     for step in case_list:
+        variable_dict = {}
         for case in step:
             print("---------case:%s" % case)
             case_id = case.get("case_id")
             print("case_id:%s" % case_id)
-            variable_dict = case.get("case_variable")
+            variable_dict.update(case.get("case_variable"))
+            print("第一次打印： %s" %variable_dict)
 
             # 字典转字符串str(dict)
             # 字符串转字典 eval(str)

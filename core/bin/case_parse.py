@@ -26,11 +26,14 @@ import re
 
 
 def parse_variable(variable_dict, case):
+    print("---------------开始解析变量-------------------")
+    print("variable_dict: %s" %variable_dict)
+    print("case: %s" % case)
     vars = re.findall(r"\$\{\w+\}", case)
     if len(vars) > 0:
         for var in vars:
             a = var.lstrip("${").rstrip("}")
-            # print(a)
+            print(a)
             case = case.replace(var, str(variable_dict.get(a)))
     return case
 
