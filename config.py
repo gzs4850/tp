@@ -1,4 +1,5 @@
 import os
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -18,6 +19,20 @@ class Config:
     SQLALCHEMY_RECORD_QUERIES = True
     FLASKY_PER_PAGE = 20
     FLASKY_SLOW_DB_QUERY_TIME = 0.5
+
+    # apscheduler 配置信息
+    JOBS = []
+    SCHEDULER_JOBSTORES = {
+        'default': SQLAlchemyJobStore(url='mysql+pymysql://root:123456@localhost:3306/tp?charset=utf8mb4')
+    }
+    SCHEDULER_EXECUTORS = {
+        'default': {'type': 'threadpool', 'max_workers': 20}
+    }
+    SCHEDULER_JOB_DEFAULTS = {
+        'coalesce': False,
+        'max_instances': 5
+    }
+    SCHEDULER_API_ENABLED = True
 
     @staticmethod
     def init_app(app):
