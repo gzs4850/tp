@@ -3,14 +3,10 @@ import json
 
 from flask import jsonify, request, g, url_for, current_app
 from sqlalchemy import and_
-
 from .. import db
 from ..models import Testcase, Caserefer, Interface, System, Project, Caseextract, Assertrule, Baseurl
 from . import api
 from core.bin.api_exec import exec_api
-
-
-# from httprunner.cli import single_run
 
 
 @api.route('/testcases')
@@ -18,7 +14,8 @@ def get_testcases():
     page = request.args.get('page', 1, type=int)
 
     pagination = db.session.query(Testcase.id, Testcase.case_name, Testcase.method, Testcase.url, Testcase.request_head,
-                                  Testcase.request_json, Testcase.check_json, Testcase.extract_json, Testcase.var_json, Testcase.status,
+                                  Testcase.request_json, Testcase.check_json, Testcase.extract_json, Testcase.var_json,
+                                  Testcase.status,
                                   Interface.if_name, System.sys_name, Project.pro_name, Testcase.interface_id,
                                   Interface.system_id, Interface.project_id, Interface.method,
                                   Interface.protocol).filter_by(status=1).join(
@@ -39,14 +36,15 @@ def get_testcases():
         next = url_for('api.get_projects', page=page + 1)
     return jsonify({
         'code': 1,
-        'testcases': [{'id': testcase.id, 'case_name': testcase.case_name, 'method':testcase.method, 'url': testcase.url,
-                       'request_head': testcase.request_head, 'request_json': testcase.request_json,
-                       'check_json': testcase.check_json, 'var_json': testcase.var_json,
-                       'extract_json': testcase.extract_json, 'status': testcase.status, 'if_name': testcase.if_name,
-                       'sys_name': testcase.sys_name, 'pro_name': testcase.pro_name,
-                       'interface_id': testcase.interface_id, 'system_id': testcase.system_id,
-                       'project_id': testcase.project_id, 'protocol': testcase.protocol} for
-                      testcase in testcases],
+        'testcases': [
+            {'id': testcase.id, 'case_name': testcase.case_name, 'method': testcase.method, 'url': testcase.url,
+             'request_head': testcase.request_head, 'request_json': testcase.request_json,
+             'check_json': testcase.check_json, 'var_json': testcase.var_json,
+             'extract_json': testcase.extract_json, 'status': testcase.status, 'if_name': testcase.if_name,
+             'sys_name': testcase.sys_name, 'pro_name': testcase.pro_name,
+             'interface_id': testcase.interface_id, 'system_id': testcase.system_id,
+             'project_id': testcase.project_id, 'protocol': testcase.protocol} for
+            testcase in testcases],
         'prev': prev,
         'next': next,
         'count': pagination.total
@@ -72,7 +70,8 @@ def get_testcaselist():
         condition = and_(condition, Interface.project_id == project_id)
 
     pagination = db.session.query(Testcase.id, Testcase.case_name, Testcase.url, Testcase.method, Testcase.request_head,
-                                  Testcase.request_json, Testcase.check_json, Testcase.extract_json, Testcase.var_json, Testcase.status,
+                                  Testcase.request_json, Testcase.check_json, Testcase.extract_json, Testcase.var_json,
+                                  Testcase.status,
                                   Interface.if_name, System.sys_name, Project.pro_name, Testcase.interface_id,
                                   Interface.system_id, Interface.project_id,
                                   Interface.protocol).filter(condition).join(Interface,
@@ -94,7 +93,7 @@ def get_testcaselist():
         'code': 1,
         'testcases': [{'id': testcase.id, 'case_name': testcase.case_name, 'url': testcase.url,
                        'request_head': testcase.request_head, 'request_json': testcase.request_json,
-                       'check_json': testcase.check_json, 'var_json':testcase.var_json,
+                       'check_json': testcase.check_json, 'var_json': testcase.var_json,
                        'extract_json': testcase.extract_json, 'status': testcase.status, 'if_name': testcase.if_name,
                        'sys_name': testcase.sys_name, 'pro_name': testcase.pro_name,
                        'interface_id': testcase.interface_id, 'system_id': testcase.system_id,
@@ -108,7 +107,7 @@ def get_testcaselist():
 
 @api.route('/testcases/<int:id>')
 def get_testcase(id):
-    testcases = Testcase.query.filter_by(id = id)
+    testcases = Testcase.query.filter_by(id=id)
     return jsonify({
         'code': 1,
         'testcases': [testcase.to_json() for testcase in testcases]
@@ -147,6 +146,27 @@ def edit_testcase(id):
         'testcase': testcase.to_json()
     })
 
+
+@api.route('/testcases/<int:id>', methods=['DELETE'])
+def delete_testcase(id):
+    testcase = Testcase.query.get_or_404(id)
+    testcase.status = 0
+    db.session.add(testcase)
+    db.session.commit()
+    return jsonify({'code': 1, 'message': '删除成功'})
+
+
+# 单独执行一个case
+@api.route('/testcases/run/<int:id>', methods=['POST'])
+def run_single_testcase(id):
+    env = request.args.get("env")
+    run(id, env)
+    return jsonify({
+        'code': 1,
+        'message': '执行成功'
+    })
+
+
 # 根据项目、系统分类执行case
 @api.route('/testcases/run', methods=['POST'])
 def run_testcase_by_condition(env, project_id, system_id):
@@ -172,16 +192,6 @@ def run_testcase_by_condition(env, project_id, system_id):
     })
 
 
-# 单独执行一个case
-@api.route('/testcases/run/<int:id>', methods=['POST'])
-def run_single_testcase(id):
-    env = request.args.get("env")
-    run(id, env)
-    return jsonify({
-        'code': 1,
-        'message': '执行成功'
-    })
-
 # 用例执行
 def run(id, env):
     caserefers = Caserefer.query.filter_by(mockid=id).order_by(Caserefer.ordernum).all()
@@ -206,6 +216,7 @@ def run(id, env):
     print("testsuit: %s" % testsuit)
     exec_api(testsuit=str(testsuit))
 
+
 # 封装case
 def package_case(case_id, env):
     case = {}
@@ -213,7 +224,7 @@ def package_case(case_id, env):
     testcase = Testcase.query.get_or_404(case_id)
     case['name'] = testcase.to_json().get('case_name')
     case['id'] = testcase.to_json().get('id')
-    case['baseurl'] =getBaseurl(testcase.to_json().get('interface_id'), env)
+    case['baseurl'] = getBaseurl(testcase.to_json().get('interface_id'), env)
     case['request']['variable'] = testcase.to_json().get('var_json')
     case['request']['url'] = testcase.to_json().get('url')
     case['request']['method'] = testcase.to_json().get('method')
@@ -225,18 +236,14 @@ def package_case(case_id, env):
     case['request']['teardown_hooks'] = []
     return case
 
-@api.route('/testcases/<int:id>', methods=['DELETE'])
-def delete_testcase(id):
-    testcase = Testcase.query.get_or_404(id)
-    testcase.status = 0
-    db.session.add(testcase)
-    db.session.commit()
-    return jsonify({'code': 1, 'message': '删除成功'})
 
+# 获取环境URL
 def getBaseurl(interface_id, env):
     print("---------interface_id-----------:%s" % interface_id)
-    baseurl = db.session.query(Baseurl).join(System, System.id == Baseurl.system_id).join(Interface, System.id == Interface.system_id).join(Testcase, Interface.id == Testcase.interface_id).filter(Testcase.interface_id == interface_id).first()
-    print("---------baseurl-----------:%s" %baseurl.qa_url)
+    baseurl = db.session.query(Baseurl).join(System, System.id == Baseurl.system_id).join(Interface,
+                                                                                          System.id == Interface.system_id).join(
+        Testcase, Interface.id == Testcase.interface_id).filter(Testcase.interface_id == interface_id).first()
+    print("---------baseurl-----------:%s" % baseurl.qa_url)
     if env == "uat":
         return baseurl.qa_url
     else:
@@ -310,7 +317,7 @@ def new_referCase(id):
         caserefer = Caserefer.query.filter_by(mockid=id).order_by(
             db.desc(Caserefer.ordernum)).first()
         if caserefer:
-            ordernum = int(caserefer.ordernum)+1
+            ordernum = int(caserefer.ordernum) + 1
             # print(ordernum)
         reqlist['ordernum'] = ordernum
         reqlist['mockid'] = id

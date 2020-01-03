@@ -5,7 +5,6 @@
 import datetime
 
 from app.api.testcases import run_testcase_by_condition
-from manage import app
 from . import api
 from .. import scheduler
 from flask import request
@@ -119,8 +118,8 @@ def show_jobs():
 
 def exe_job(job_type, env, project_id, system_id):
     # with app.app_context():
-        print("hello %s %s %s %s" % (job_type, env, project_id, system_id))
-        run_testcase_by_condition(env,project_id=project_id,system_id=system_id)
+    print("hello %s %s %s %s" % (job_type, env, project_id, system_id))
+    run_testcase_by_condition(env,project_id=project_id,system_id=system_id)
 
 
 def jobfromparm(**jobargs):
