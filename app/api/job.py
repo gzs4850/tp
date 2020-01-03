@@ -2,13 +2,16 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2020/1/2 15:00
 # @Author  : z.g
+import datetime
 
+from app.api.testcases import run_testcase_by_condition
+from manage import app
 from . import api
 from .. import scheduler
 from flask import request
 import json
 
-@api.route('/jobpause', methods=['POST'])
+@api.route('/pausejob', methods=['POST'])
 def pause_job():
     response = {'code': '-1'}
     try:
@@ -21,7 +24,7 @@ def pause_job():
         response['msg'] = str(e)
     return json.dumps(response)
 
-@api.route('/jobresume', methods=['POST'])
+@api.route('/resumejob', methods=['POST'])
 def resume_job():
     response = {'code': '-1'}
     try:
@@ -34,7 +37,7 @@ def resume_job():
         response['msg'] = str(e)
     return json.dumps(response)
 
-@api.route('/jobremove', methods=['DELETE'])
+@api.route('/removejob', methods=['DELETE'])
 def remove_job():
     response = {'status': "-1"}
     try:
@@ -47,7 +50,7 @@ def remove_job():
         response['msg'] = str(e)
     return json.dumps(response)
 
-@api.route('/jobedit', methods=['POST'])
+@api.route('/editjob', methods=['PUT'])
 def edit_job():
     response = {'code': "-1"}
     try:
@@ -64,7 +67,7 @@ def edit_job():
         response['msg'] = str(e)
     return json.dumps(response)
 
-@api.route('/jobadd', methods=['POST'])
+@api.route('/addjob', methods=['POST'])
 def add_job():
     response = {'code': "-1"}
     try:
@@ -77,6 +80,7 @@ def add_job():
         response['msg'] = str(e)
     return json.dumps(response)
 
+@api.route('/getjobs', methods=['GET'])
 def show_jobs():
     response = {}
     try:
@@ -95,29 +99,52 @@ def show_jobs():
             info = {
                 'id': ret.id,
                 'next_run_time': ret.next_run_time,
-                'cmd': ret.kwargs.get('cmd'),
+                # 'cmd': ret.kwargs.get('cmd'),
+                'env': ret.kwargs.get('env'),
+                'project_id': ret.kwargs.get('project_id'),
+                'system_id': ret.kwargs.get('system_id'),
+                'job_type': ret.kwargs.get('job_type'),
                 # 'func':ret.func_ref,
                 'status': 'running' if ret.next_run_time != None else 'stop',
                 'cron': ' '.join(cron_list)
             }
             info_list.append(info)
         response['code'] = 1
-        response['data'] = info_list
+        response['jobs'] = info_list
         response['count'] = len(info_list)
     except Exception as e:
         response['msg'] = str(e)
-    return json.dumps(response)
+    return json.dumps(response,cls=DateEncoder)
 
-def exe_cmd(cmd,task_id):
-    print("hello %s %s" %(cmd,task_id))
+
+def exe_job(job_type, env, project_id, system_id):
+    # with app.app_context():
+        print("hello %s %s %s %s" % (job_type, env, project_id, system_id))
+        run_testcase_by_condition(env,project_id=project_id,system_id=system_id)
+
 
 def jobfromparm(**jobargs):
     id = jobargs['id']
-    func = __name__+':'+'exe_cmd'
-    args = jobargs['cmd']
+    env = jobargs['env']
+    project_id = jobargs['project_id']
+    system_id = jobargs['system_id']
+    job_type = jobargs['job_type']
+    if job_type == 'apitest':
+        func = __name__ + ':' + 'exe_job'
+    else:
+        print("目前只支持接口测试。。。")
     cron = jobargs['cron'].split(' ')
     cron_rel = dict(second=cron[0], minute=cron[1], hour=cron[2], month=cron[4], day_of_week=cron[5])
     print(cron_rel)
-    scheduler.add_job(func=func, id=id, kwargs={'cmd': args, 'task_id': id}, trigger='cron', **cron_rel, replace_existing=True)
+    scheduler.add_job(func=func, id=id, kwargs={'job_type':job_type, 'env': env, 'project_id': project_id, 'system_id': system_id}, trigger='cron', **cron_rel, replace_existing=True)
     print(id)
     return id
+
+class DateEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.strftime('%Y-%m-%d %H:%M:%S')
+        elif isinstance(obj, datetime.date):
+            return obj.strftime("%Y-%m-%d")
+        else:
+            return json.JSONEncoder.default(self, obj)

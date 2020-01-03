@@ -147,16 +147,30 @@ def edit_testcase(id):
         'testcase': testcase.to_json()
     })
 
-# 批量执行所有case
+# 根据项目、系统分类执行case
 @api.route('/testcases/run', methods=['POST'])
-def run_all_testcase():
-    cases = Testcase.query.filter(Testcase.is_case == 1).all()
-    for case in cases:
-        run(case.id)
+def run_testcase_by_condition(env, project_id, system_id):
+    # system_id = request.args.get("system_id")
+    # project_id = request.args.get("project_id")
+
+    condition = (Testcase.is_case == 1)
+    if system_id:
+        condition = and_(condition, Interface.system_id == system_id)
+    if project_id:
+        condition = and_(condition, Interface.project_id == project_id)
+
+    ids = db.session.query(Testcase.id).filter(condition).join(Interface, Testcase.interface_id == Interface.id).join(
+        Project, Interface.project_id == Project.id).join(System, Interface.system_id == System.id)
+
+    for id in ids:
+        print(id[0])
+        run(id[0], env)
+
     return jsonify({
         'code': 1,
         'message': '执行成功'
     })
+
 
 # 单独执行一个case
 @api.route('/testcases/run/<int:id>', methods=['POST'])
@@ -168,7 +182,7 @@ def run_single_testcase(id):
         'message': '执行成功'
     })
 
-# 执行
+# 用例执行
 def run(id, env):
     caserefers = Caserefer.query.filter_by(mockid=id).order_by(Caserefer.ordernum).all()
     # print("referCase: %s" %caserefers)
