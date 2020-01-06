@@ -116,9 +116,10 @@ def show_jobs():
     return json.dumps(response,cls=DateEncoder)
 
 
+
 def exe_job(job_type, env, project_id, system_id):
     # with app.app_context():
-    print("hello %s %s %s %s" % (job_type, env, project_id, system_id))
+    # print("hello %s %s %s %s" % (job_type, env, project_id, system_id))
     run_testcase_by_condition(env,project_id=project_id,system_id=system_id)
 
 
@@ -138,6 +139,7 @@ def jobfromparm(**jobargs):
     scheduler.add_job(func=func, id=id, kwargs={'job_type':job_type, 'env': env, 'project_id': project_id, 'system_id': system_id}, trigger='cron', **cron_rel, replace_existing=True)
     print(id)
     return id
+
 
 class DateEncoder(json.JSONEncoder):
     def default(self, obj):

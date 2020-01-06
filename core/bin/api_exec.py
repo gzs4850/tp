@@ -47,7 +47,7 @@ def load_case(testsuit):
     # print("case_list: %s" % case_list)
     return case_list
 
-def exec_api(testsuit):
+def exec_api(testsuit, pch):
     case_list = load_case(testsuit)
     print("case_list:%s" % case_list)
     for step in case_list:
@@ -61,7 +61,14 @@ def exec_api(testsuit):
 
             # 字典转字符串str(dict)
             # 字符串转字典 eval(str)
-            case = eval(case_parse.parse_case(variable_dict, str(case)))
+            case1 = case_parse.parse_case(variable_dict, str(case))
+            print("解析成功-----------case1: %s" % case1)
+            print("解析成功-----------type of case1: %s" % type(case1))
+            case = eval(case1)
+            print("解析成功-----------case: %s" % case)
+
+            # case = eval(case_parse.parse_case(variable_dict, str(case)))
+            # print("解析成功-----------case: %s" %case)
 
             start_time = time.strftime("%Y-%m-%d %X",time.localtime())
             # 发送请求，返回code，response, headers
@@ -113,9 +120,9 @@ def exec_api(testsuit):
             #     for msg in assert_msg:
             #         msgInfo.append(escape_string(msg))
 
-            mc.exec_data('insert into testresults(case_id, test_result, real_rsp_code, real_req_path, real_req_head, real_req_json, real_rsp_head, real_rsp_json, real_rsp_time, assert_msg, timestamp) '
-                         'values(%s, "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")'
-                         %(case_id, test_result, code, req_url, req_header, req_data, headers, result, elapsedtime, assert_msg, start_time))
+            mc.exec_data('insert into testresults(case_id, test_result, real_rsp_code, real_req_path, real_req_head, real_req_json, real_rsp_head, real_rsp_json, real_rsp_time, assert_msg, timestamp, batch_number) '
+                         'values(%s, "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")'
+                         %(case_id, test_result, code, req_url, req_header, req_data, headers, result, elapsedtime, assert_msg, start_time, pch))
 
             # 从响应体、响应头中提取字段值
             variable_dict.update(field_extract.extract(case, result, headers))

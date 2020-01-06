@@ -292,11 +292,11 @@ class Testresult(db.Model):
     real_rsp_time = db.Column(db.String(20))
     assert_msg = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, default=datetime.now)
-    batch_number = db.Column(db.String(10))
+    batch_number = db.Column(db.String(20))
 
     def to_json(self):
         timestamp = datetime.strftime(self.timestamp, "%Y-%m-%d %H:%M:%S")
-        print("timestamp-----------:%s" %timestamp)
+        # print("timestamp-----------:%s" %timestamp)
         json_testresult = {
             'id': self.id,
             'case_id': self.case_id,

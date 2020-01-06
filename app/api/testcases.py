@@ -3,7 +3,9 @@ import json
 
 from flask import jsonify, request, g, url_for, current_app
 from sqlalchemy import and_
-from .. import db
+
+# import app
+from .. import db, scheduler
 from ..models import Testcase, Caserefer, Interface, System, Project, Caseextract, Assertrule, Baseurl
 from . import api
 from core.bin.api_exec import exec_api
@@ -159,8 +161,9 @@ def delete_testcase(id):
 # 单独执行一个case
 @api.route('/testcases/run/<int:id>', methods=['POST'])
 def run_single_testcase(id):
+    pch = ''
     env = request.args.get("env")
-    run(id, env)
+    run(id, env, pch)
     return jsonify({
         'code': 1,
         'message': '执行成功'
@@ -172,28 +175,32 @@ def run_single_testcase(id):
 def run_testcase_by_condition(env, project_id, system_id):
     # system_id = request.args.get("system_id")
     # project_id = request.args.get("project_id")
+    import time
+    pch = str(round(time.time()*1000))
 
-    condition = (Testcase.is_case == 1)
-    if system_id:
-        condition = and_(condition, Interface.system_id == system_id)
-    if project_id:
-        condition = and_(condition, Interface.project_id == project_id)
+    with scheduler.app.app_context():
 
-    ids = db.session.query(Testcase.id).filter(condition).join(Interface, Testcase.interface_id == Interface.id).join(
-        Project, Interface.project_id == Project.id).join(System, Interface.system_id == System.id)
+        condition = (Testcase.is_case == 1)
+        if system_id:
+            condition = and_(condition, Interface.system_id == system_id)
+        if project_id:
+            condition = and_(condition, Interface.project_id == project_id)
 
-    for id in ids:
-        print(id[0])
-        run(id[0], env)
+        ids = db.session.query(Testcase.id).filter(condition).join(Interface, Testcase.interface_id == Interface.id).join(
+            Project, Interface.project_id == Project.id).join(System, Interface.system_id == System.id)
 
-    return jsonify({
-        'code': 1,
-        'message': '执行成功'
-    })
+        for id in ids:
+            print(id[0])
+            run(id[0], env, pch)
+
+        return jsonify({
+            'code': 1,
+            'message': '执行成功'
+        })
 
 
 # 用例执行
-def run(id, env):
+def run(id, env, pch):
     caserefers = Caserefer.query.filter_by(mockid=id).order_by(Caserefer.ordernum).all()
     # print("referCase: %s" %caserefers)
     testsuit = []
@@ -214,7 +221,7 @@ def run(id, env):
     testsuit.append(cases)
     testsuit = json.dumps(testsuit)
     print("testsuit: %s" % testsuit)
-    exec_api(testsuit=str(testsuit))
+    exec_api(testsuit=str(testsuit), pch=pch)
 
 
 # 封装case

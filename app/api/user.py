@@ -48,6 +48,8 @@ def userinfo():
             },  {
                 'name': 'env'
             }, {
+                'name': 'jobmgr'
+            }, {
                 'name': 'userPassword'
             }
             , {
