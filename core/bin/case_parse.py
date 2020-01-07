@@ -28,44 +28,43 @@ case = "{'timeout': 10, 'http_type': 'http', 'host': 'gateway.baolvtest.paas.com
 
 
 def parse_variable(variable_dict, case):
-    print("---------------开始解析变量-------------------")
-    print("variable_dict: %s" %variable_dict)
-    print("case: %s" % case)
+    # print("---------------开始解析变量-------------------")
+    # print("variable_dict: %s" %variable_dict)
+    # print("case: %s" % case)
     vars = re.findall(r"\$\{\w+\}", case)
     if len(vars) > 0:
         for var in vars:
-            print("var: %s" %var)
+            # print("var: %s" %var)
             a = var.lstrip("${").rstrip("}")
-            print("a: %s" % a)
-            print("str(variable_dict.get(a)): %s" % str(variable_dict.get(a)))
+            # print("a: %s" % a)
+            # print("variable_dict.get(a): %s" % variable_dict.get(a))
+            # print("variable_dict.get(a): type%s" % type(variable_dict.get(a)))
             if isinstance(variable_dict.get(a), dict):
-                case = case.replace(var, str(variable_dict.get(a).keys[0]))
+                case = case.replace(var, str(list(variable_dict.get(a).keys())[0]))
             else:
                 case = case.replace(var, str(variable_dict.get(a)))
-
-            # case = case.replace(var, str(variable_dict.get(a)))
-    print("-解析变量成功-------------------case: %s" %case)
+    # print("-解析变量成功-------------------case: %s" %case)
     return case
 
 
 def parse_func(case):
-    print("---------------开始解析函数-------------------")
+    # print("---------------开始解析函数-------------------")
     # funcs = re.findall(r"\$\{\w+\(+.*?\)+.*?\}", case)
     funcs = re.findall(r"\$\{\w+\(+.*?\)\}", case)
     if len(funcs) > 0:
-        print("需解析函数------------funcs: %s" %funcs)
+        # print("需解析函数------------funcs: %s" %funcs)
         for func in funcs:
             a = func.lstrip("${").rstrip("}")
             # print(eval(a))
             case = case.replace(func, str(eval(a)))
-    print("解析函数成功------------case: %s" % case)
+    # print("解析函数成功------------case: %s" % case)
     return case
 
 
 def parse_case(variable_dict, case):
     case = parse_variable(variable_dict, case)
     case = parse_func(case)
-    print("解析完成-------------case:%s" %case)
+    # print("解析完成-------------case:%s" %case)
     return case
 
 
