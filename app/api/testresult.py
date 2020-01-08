@@ -106,7 +106,7 @@ def get_success_rate():
         info_list = []
         for ret in ret_list:
             info = {
-                'time':time.strftime("%d%H%M%S", time.localtime(int(ret[0][0:10]))),
+                'time':time.strftime("%H:%M:%S", time.localtime(int(ret[0][0:10]))),
                 'total':ret[1],
                 'pass':ret[2],
                 'fail':ret[3],
