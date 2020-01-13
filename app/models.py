@@ -288,7 +288,7 @@ class Testresult(db.Model):
     real_req_head = db.Column(db.Text)
     real_req_json = db.Column(db.Text)
     real_rsp_head = db.Column(db.Text)
-    real_rsp_json = db.Column(db.Text)
+    real_rsp_json = db.Column(db.Text(65536))
     real_rsp_time = db.Column(db.String(20))
     assert_msg = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, default=datetime.now)

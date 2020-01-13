@@ -50,6 +50,8 @@ def userinfo():
             }, {
                 'name': 'jobmgr'
             }, {
+                'name': 'result'
+            }, {
                 'name': 'userPassword'
             }
             , {
