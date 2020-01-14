@@ -29,13 +29,18 @@ def get_testresult(id):
 
 @api.route('/testresults')
 def get_testresults():
+    print(' request.args:  %s' %  request.args)
+    # data = request.get_json(force=True)
+    # batch_number = data.get("batchNumber")
     page = request.args.get('page', 1, type=int)
     id = request.args.get("id")
     name = request.args.get("case_name")
     interface_id = request.args.get("interface_id")
     system_id = request.args.get("system_id")
     project_id = request.args.get("project_id")
-    batch_number = request.args.get("batch_number")
+    batch_number = request.args.get("batchNumber")
+    test_result = request.args.get("result")
+    print('batch_number:  %s' %batch_number)
 
     condition = (1 == 1)
     if id:
@@ -48,6 +53,8 @@ def get_testresults():
         condition = and_(condition, Interface.system_id == system_id)
     if project_id:
         condition = and_(condition, Interface.project_id == project_id)
+    if test_result:
+        condition = and_(condition, Testresult.test_result == test_result)
     if batch_number:
         condition = and_(condition, Testresult.batch_number == batch_number)
 
@@ -136,10 +143,13 @@ def get_success_rate():
 def get_batchNumber():
     response = {}
     try:
-        noList = db.session.query(Testresult.batch_number).distinct().filter(Testresult.batch_number != '').order_by(db.desc(Testresult.batch_number)).limit(50).all()
-        # print("noList: %s" %noList)
-        response['batchnumbers'] = noList
-        response['count'] = len(noList)
+        noList = db.session.query(Testresult.batch_number).distinct().filter(Testresult.batch_number != '').order_by(db.desc(Testresult.batch_number)).limit(20).all()
+        # print("noList0: %s" %noList)
+        batchnumbers = []
+        for no in noList:
+            batchnumbers.append(no[0])
+        response['batchnumbers'] = batchnumbers
+        response['count'] = len(batchnumbers)
         response['code'] = 1
     except Exception as e:
         response['msg'] = str(e)
