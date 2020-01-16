@@ -1,15 +1,25 @@
 # coding:utf-8
 from flask import jsonify, request, g, url_for, current_app
+from sqlalchemy.sql.elements import and_
+
 from .. import db
 from ..models import Project
 from . import api
 
 @api.route('/projects')
 def get_projects():
-    page = request.args.get('page', 1, type=int)
-    pagination = Project.query.filter_by(status=1).paginate(
-        page, per_page=current_app.config['FLASKY_PER_PAGE'],
-        error_out=False)
+    page = request.args.get('currentPage', 1, type=int)
+    per_page = request.args.get('pageSize', 10, type=int)
+    id = request.args.get('id')
+    pro_name = request.args.get('pro_name')
+
+    condition = (Project.status==1)
+    if id:
+        condition = and_(Project.id==id)
+    if pro_name:
+        condition = and_(Project.pro_name.like('%{0}%'.format(pro_name)))
+
+    pagination = Project.query.filter(condition).paginate(page, per_page,error_out=False)
     projects = pagination.items
     prev = None
     if pagination.has_prev:

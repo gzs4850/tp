@@ -29,10 +29,8 @@ def get_testresult(id):
 
 @api.route('/testresults')
 def get_testresults():
-    print(' request.args:  %s' %  request.args)
-    # data = request.get_json(force=True)
-    # batch_number = data.get("batchNumber")
-    page = request.args.get('page', 1, type=int)
+    page = request.args.get('currentPage', 1, type=int)
+    per_page = request.args.get('pageSize', 10, type=int)
     id = request.args.get("id")
     name = request.args.get("case_name")
     interface_id = request.args.get("interface_id")
@@ -40,7 +38,6 @@ def get_testresults():
     project_id = request.args.get("project_id")
     batch_number = request.args.get("batchNumber")
     test_result = request.args.get("result")
-    print('batch_number:  %s' %batch_number)
 
     condition = (1 == 1)
     if id:
@@ -67,11 +64,7 @@ def get_testresults():
                                   Testcase.interface_id, Interface.system_id, Interface.project_id).filter(
         condition).join(Testcase, Testresult.case_id == Testcase.id).join(Interface,
                                                                           Testcase.interface_id == Interface.id).join(
-        Project, Interface.project_id == Project.id).join(System, Interface.system_id == System.id).paginate(page,
-                                                                                                             per_page=
-                                                                                                             current_app.config[
-                                                                                                                 'FLASKY_PER_PAGE'],
-                                                                                                             error_out=False)
+        Project, Interface.project_id == Project.id).join(System, Interface.system_id == System.id).order_by(db.desc(Testresult.batch_number)).paginate(page,per_page,error_out=False)
 
     testresults = pagination.items
     prev = None
