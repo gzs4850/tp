@@ -21,6 +21,6 @@ requests==2.22.0
 requests-toolbelt==0.9.1
 simplejson==3.17.0
 six==1.13.0
-urllib3==1.25.7
+urllib3==1.26.5
 wcwidth==0.1.7
 zipp==0.6.0
